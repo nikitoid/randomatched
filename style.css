@@ -2,6 +2,11 @@
 
 /* CSS Custom Properties для тем */
 :root {
+  /* Viewport Height Variables */
+  --vh: 1vh;
+  --vh-100: 100vh;
+  --vh-100-dynamic: calc(var(--vh, 1vh) * 100);
+  
   /* Light Theme Colors */
   --md-sys-color-primary: #6750a4;
   --md-sys-color-on-primary: #ffffff;
@@ -167,6 +172,10 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  /* Предотвращаем масштабирование на мобильных устройствах */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -182,6 +191,10 @@ body {
               color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Предотвращаем сдвиг элементов при изменении viewport */
+  overflow-x: hidden;
+  position: relative;
+  min-height: var(--vh-100-dynamic);
 }
 
 /* Typography Classes */
@@ -409,8 +422,32 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Responsive Design */
+/* Mobile Viewport Fix */
 @media (max-width: 768px) {
+  /* Дополнительная стабилизация для мобильных устройств */
+  html {
+    height: 100%;
+    height: var(--vh-100-dynamic);
+  }
+  
+  body {
+    height: 100%;
+    height: var(--vh-100-dynamic);
+    /* Предотвращаем bounce-эффект на iOS */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .main-content {
+    /* Используем фиксированную высоту для предотвращения сдвига */
+    height: calc(var(--vh-100-dynamic) - 56px);
+    min-height: calc(var(--vh-100-dynamic) - 56px);
+    max-height: calc(var(--vh-100-dynamic) - 56px);
+    overflow-y: auto;
+    /* Плавная прокрутка */
+    -webkit-overflow-scrolling: touch;
+  }
+  
   .container {
     padding-left: var(--md-sys-spacing-4);
     padding-right: var(--md-sys-spacing-4);
@@ -469,7 +506,7 @@ body {
 
 .w-full { width: 100%; }
 .h-full { height: 100%; }
-.min-h-screen { min-height: 100vh; }
+.min-h-screen { min-height: var(--vh-100-dynamic); }
 
 .relative { position: relative; }
 .absolute { position: absolute; }
@@ -577,7 +614,7 @@ body {
 /* Main Content Styles */
 .main-content {
   margin-top: 56px;
-  min-height: calc(100vh - 56px);
+  min-height: calc(var(--vh-100-dynamic) - 56px);
   padding: var(--md-sys-spacing-4);
   background-color: var(--md-sys-color-background);
   transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
@@ -795,8 +832,8 @@ body {
   transform: translateY(0);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Responsive Design - Tablet */
+@media (max-width: 768px) and (min-width: 481px) {
   .main-content {
     padding: var(--md-sys-spacing-3);
   }
@@ -823,13 +860,20 @@ body {
   }
 }
 
+/* Mobile Devices */
 @media (max-width: 480px) {
   .main-content {
     padding: var(--md-sys-spacing-2);
+    /* Дополнительная стабилизация для маленьких экранов */
+    height: calc(var(--vh-100-dynamic) - 56px);
+    min-height: calc(var(--vh-100-dynamic) - 56px);
+    max-height: calc(var(--vh-100-dynamic) - 56px);
   }
   
   .content-container {
     gap: var(--md-sys-spacing-4);
+    /* Обеспечиваем правильное распределение пространства */
+    min-height: calc(100% - var(--md-sys-spacing-4));
   }
   
   .header-content {

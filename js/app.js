@@ -28,6 +28,9 @@ class RandomatchedApp {
             // Получение DOM элементов
             this.getElements();
             
+            // Настройка динамической высоты viewport
+            this.setupViewportHeight();
+            
             // Настройка менеджера тем
             this.setupThemeManager();
             
@@ -62,6 +65,76 @@ class RandomatchedApp {
             lastGenerationBtn: document.getElementById('last-generation-btn'),
             resetSessionBtn: document.getElementById('reset-session-btn')
         };
+    }
+
+    /**
+     * Настройка динамической высоты viewport для предотвращения сдвига элементов
+     */
+    setupViewportHeight() {
+        let lastHeight = window.innerHeight;
+        let isUpdating = false;
+
+        // Функция для обновления CSS переменных высоты viewport
+        const updateViewportHeight = () => {
+            if (isUpdating) return;
+            
+            const currentHeight = window.innerHeight;
+            
+            // Обновляем только если высота действительно изменилась
+            if (Math.abs(currentHeight - lastHeight) > 1) {
+                isUpdating = true;
+                
+                const vh = currentHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+                document.documentElement.style.setProperty('--vh-100', `${currentHeight}px`);
+                document.documentElement.style.setProperty('--vh-100-dynamic', `${currentHeight}px`);
+                
+                lastHeight = currentHeight;
+                
+                console.log('[VIEWPORT] Высота viewport обновлена:', currentHeight);
+                
+                // Сбрасываем флаг через небольшую задержку
+                setTimeout(() => {
+                    isUpdating = false;
+                }, 50);
+            }
+        };
+
+        // Устанавливаем начальное значение
+        updateViewportHeight();
+
+        // Обновляем при изменении размера окна
+        window.addEventListener('resize', updateViewportHeight);
+        
+        // Обновляем при изменении ориентации устройства
+        window.addEventListener('orientationchange', () => {
+            // Задержка для корректного получения размеров после поворота
+            setTimeout(updateViewportHeight, 100);
+            setTimeout(updateViewportHeight, 300); // Дополнительная проверка
+        });
+
+        // Обновляем при скролле (для браузеров, которые скрывают/показывают адресную строку)
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateViewportHeight();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Дополнительная проверка при фокусе/разфокусе окна
+        window.addEventListener('focus', updateViewportHeight);
+        window.addEventListener('blur', updateViewportHeight);
+
+        // Периодическая проверка для дополнительной стабильности
+        setInterval(updateViewportHeight, 1000);
+
+        console.log('[VIEWPORT] Динамическая высота viewport настроена');
     }
 
     /**
