@@ -20,34 +20,6 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
     
-    <!-- TailwindCSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f3f0ff',
-                            100: '#e9e5ff',
-                            200: '#d6ceff',
-                            300: '#b8a6ff',
-                            400: '#9c7bff',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -57,114 +29,75 @@
     
     <title>Randomatched</title>
 </head>
-<body class="bg-surface text-on-surface font-roboto">
-    <!-- Header -->
-    <header class="bg-primary-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Randomatched</h1>
-                <button 
-                    class="material-icons text-white hover:bg-primary-700 p-2 rounded-full transition-colors"
-                    @click="toggleTheme"
-                    aria-label="Переключить тему"
-                >
-                    <span x-text="isDark ? 'light_mode' : 'dark_mode'"></span>
-                </button>
-            </div>
+<body class="bg-surface text-on-surface">
+    <!-- Header с фиксированной позицией -->
+    <header class="header-fixed">
+        <div class="header-content">
+            <!-- Кнопка смены темы в левом углу -->
+            <button 
+                id="theme-toggle"
+                class="theme-toggle-btn"
+                aria-label="Переключить тему"
+            >
+                <span class="material-icons theme-icon">dark_mode</span>
+            </button>
+            
+            <!-- Заголовок по центру -->
+            <h1 class="header-title">Randomatched</h1>
+            
+            <!-- Пустое место для симметрии -->
+            <div class="header-spacer"></div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto">
-            <!-- Welcome Section -->
-            <section class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-primary-600 mb-4">
-                    Добро пожаловать в Randomatched
-                </h2>
-                <p class="text-lg text-on-surface-variant max-w-2xl mx-auto">
-                    PWA приложение для рандомизации с поддержкой офлайн режима и современным дизайном
-                </p>
-            </section>
+    <!-- Main контейнер с отступом сверху для header -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- Dropdown для выбора списка героев -->
+            <div class="hero-selection">
+                <div class="dropdown-container">
+                    <select id="hero-list-select" class="hero-dropdown">
+                        <option value="">Выберите список героев</option>
+                        <option value="default">Стандартный список</option>
+                        <option value="custom">Пользовательский список</option>
+                    </select>
+                    
+                    <!-- Кнопка настроек справа от dropdown -->
+                    <button 
+                        id="settings-btn"
+                        class="settings-btn"
+                        aria-label="Настройки"
+                    >
+                        <span class="material-icons">settings</span>
+                    </button>
+                </div>
+            </div>
 
-            <!-- Features Grid -->
-            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
-                    <div class="material-icons text-primary-600 text-4xl mb-4">shuffle</div>
-                    <h3 class="text-xl font-semibold mb-2">Рандомизация</h3>
-                    <p class="text-on-surface-variant">Мощные алгоритмы для случайного выбора элементов</p>
-                </div>
-                
-                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
-                    <div class="material-icons text-primary-600 text-4xl mb-4">offline_bolt</div>
-                    <h3 class="text-xl font-semibold mb-2">Офлайн режим</h3>
-                    <p class="text-on-surface-variant">Работает без интернета благодаря Service Worker</p>
-                </div>
-                
-                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
-                    <div class="material-icons text-primary-600 text-4xl mb-4">palette</div>
-                    <h3 class="text-xl font-semibold mb-2">Адаптивный дизайн</h3>
-                    <p class="text-on-surface-variant">Material Design 3 с поддержкой темной темы</p>
-                </div>
-            </section>
-
-            <!-- Action Buttons -->
-            <section class="text-center">
-                <button 
-                    class="bg-primary-600 text-white px-8 py-4 rounded-full font-medium hover:bg-primary-700 transition-colors shadow-lg"
-                    @click="startRandomization"
-                >
-                    <span class="material-icons mr-2 align-middle">play_arrow</span>
-                    Начать рандомизацию
+            <!-- Основные кнопки действий -->
+            <div class="action-buttons">
+                <!-- Primary кнопка "Сгенерировать команды" -->
+                <button id="generate-btn" class="btn btn-primary btn-large">
+                    <span class="material-icons">shuffle</span>
+                    <span>Сгенерировать команды</span>
                 </button>
-            </section>
+
+                <!-- Secondary кнопка "Последняя генерация" -->
+                <button id="last-generation-btn" class="btn btn-secondary">
+                    <span class="material-icons">history</span>
+                    <span>Последняя генерация</span>
+                </button>
+
+                <!-- Tertiary кнопка "Сброс сессии" -->
+                <button id="reset-session-btn" class="btn btn-outline">
+                    <span class="material-icons">refresh</span>
+                    <span>Сброс сессии</span>
+                </button>
+            </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-surface-container mt-16">
-        <div class="container mx-auto px-4 py-8">
-            <div class="text-center text-on-surface-variant">
-                <p>&copy; 2024 Randomatched. PWA приложение.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Alpine.js Data -->
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('app', () => ({
-                isDark: false,
-                
-                init() {
-                    // Проверяем сохраненную тему
-                    const savedTheme = localStorage.getItem('theme');
-                    if (savedTheme) {
-                        this.isDark = savedTheme === 'dark';
-                    } else {
-                        // Автоопределение темы системы
-                        this.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    }
-                    this.applyTheme();
-                },
-                
-                toggleTheme() {
-                    this.isDark = !this.isDark;
-                    this.applyTheme();
-                    localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
-                },
-                
-                applyTheme() {
-                    document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
-                },
-                
-                startRandomization() {
-                    // Заглушка для будущей функциональности
-                    alert('Функция рандомизации будет добавлена в следующих версиях!');
-                }
-            }));
-        });
-    </script>
+    <!-- Подключение основного скрипта -->
+    <script src="/app.js"></script>
 
     <!-- Service Worker Registration -->
     <script>
