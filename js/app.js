@@ -3,15 +3,19 @@
  * Содержит инициализацию, загрузку модулей и обработчики событий
  */
 
+import { ThemeManager } from './modules/theme.js';
+
 class RandomatchedApp {
     constructor() {
-        this.isDark = false;
         this.currentHeroList = null;
         this.lastGeneration = null;
         this.modules = {};
         
         // DOM элементы
         this.elements = {};
+        
+        // Инициализация менеджера тем
+        this.themeManager = new ThemeManager();
         
         this.init();
     }
@@ -21,11 +25,11 @@ class RandomatchedApp {
      */
     async init() {
         try {
-            // Инициализация темы
-            this.initTheme();
-            
             // Получение DOM элементов
             this.getElements();
+            
+            // Настройка менеджера тем
+            this.setupThemeManager();
             
             // Загрузка модулей
             await this.loadModules();
@@ -58,6 +62,19 @@ class RandomatchedApp {
     }
 
     /**
+     * Настройка менеджера тем
+     */
+    setupThemeManager() {
+        // Передаем иконку темы в менеджер
+        if (this.elements.themeIcon) {
+            this.themeManager.setThemeIcon(this.elements.themeIcon);
+        }
+        
+        // Подписываемся на изменения системной темы
+        this.themeManager.watchSystemTheme();
+    }
+
+    /**
      * Загрузка модулей приложения
      */
     async loadModules() {
@@ -78,7 +95,7 @@ class RandomatchedApp {
     setupEventListeners() {
         // Переключение темы
         if (this.elements.themeToggle) {
-            this.elements.themeToggle.addEventListener('click', () => this.toggleTheme());
+            this.elements.themeToggle.addEventListener('click', () => this.themeManager.toggleTheme());
         }
 
         // Выбор списка героев
@@ -112,47 +129,6 @@ class RandomatchedApp {
         window.addEventListener('offline', () => this.handleOnlineStatus(false));
     }
 
-    /**
-     * Инициализация темы из localStorage
-     */
-    initTheme() {
-        const savedTheme = localStorage.getItem('randomatched-theme');
-        if (savedTheme) {
-            this.isDark = savedTheme === 'dark';
-        } else {
-            // Автоопределение темы системы
-            this.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-        this.applyTheme();
-    }
-
-    /**
-     * Переключение темы
-     */
-    toggleTheme() {
-        this.isDark = !this.isDark;
-        this.applyTheme();
-        localStorage.setItem('randomatched-theme', this.isDark ? 'dark' : 'light');
-        
-        // Анимация иконки
-        if (this.elements.themeIcon) {
-            this.elements.themeIcon.style.transform = 'rotate(180deg)';
-            setTimeout(() => {
-                this.elements.themeIcon.style.transform = 'rotate(0deg)';
-            }, 300);
-        }
-    }
-
-    /**
-     * Применение темы
-     */
-    applyTheme() {
-        document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
-        
-        if (this.elements.themeIcon) {
-            this.elements.themeIcon.textContent = this.isDark ? 'light_mode' : 'dark_mode';
-        }
-    }
 
     /**
      * Обработка изменения списка героев
