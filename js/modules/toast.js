@@ -33,9 +33,9 @@ export class ToastManager {
             },
             info: {
                 icon: 'info',
-                color: '#5e35b1', // Приглушенный фиолетовый
-                bgColor: 'rgba(94, 53, 177, 0.95)',
-                borderColor: 'rgba(94, 53, 177, 0.3)'
+                color: '#1976d2', // Синий Material Design
+                bgColor: 'rgba(25, 118, 210, 0.95)',
+                borderColor: 'rgba(25, 118, 210, 0.3)'
             }
         };
         
