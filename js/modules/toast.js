@@ -16,25 +16,25 @@ export class ToastManager {
             success: {
                 icon: 'check_circle',
                 color: '#2e7d32', // Приглушенный зеленый
-                bgColor: 'rgba(46, 125, 50, 0.08)',
+                bgColor: 'rgba(46, 125, 50, 0.8)',
                 borderColor: 'rgba(46, 125, 50, 0.2)'
             },
             error: {
                 icon: 'error',
                 color: '#c62828', // Приглушенный красный
-                bgColor: 'rgba(198, 40, 40, 0.08)',
+                bgColor: 'rgba(198, 40, 40, 0.8)',
                 borderColor: 'rgba(198, 40, 40, 0.2)'
             },
             warning: {
                 icon: 'warning',
                 color: '#ef6c00', // Приглушенный оранжевый
-                bgColor: 'rgba(239, 108, 0, 0.08)',
+                bgColor: 'rgba(239, 108, 0, 0.8)',
                 borderColor: 'rgba(239, 108, 0, 0.2)'
             },
             info: {
                 icon: 'info',
                 color: '#5e35b1', // Приглушенный фиолетовый
-                bgColor: 'rgba(94, 53, 177, 0.08)',
+                bgColor: 'rgba(94, 53, 177, 0.8)',
                 borderColor: 'rgba(94, 53, 177, 0.2)'
             }
         };
