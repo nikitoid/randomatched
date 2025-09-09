@@ -16,8 +16,17 @@ export class ThemeManager {
      * Инициализация менеджера тем
      */
     init() {
-        this.loadThemeFromStorage();
-        this.applyTheme();
+        // Проверяем, была ли тема уже применена inline скриптом
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme) {
+            // Синхронизируемся с уже примененной темой
+            this.isDark = currentTheme === 'dark';
+            console.log('[ThemeManager] Синхронизирован с inline скриптом, тема:', currentTheme);
+        } else {
+            // Если тема не была применена, загружаем и применяем
+            this.loadThemeFromStorage();
+            this.applyTheme();
+        }
         console.log('[ThemeManager] Инициализирован');
     }
 

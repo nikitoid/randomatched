@@ -1,5 +1,18 @@
 /* Randomatched PWA - Material Design 3 Styles */
 
+/* Предотвращение моргания темы при загрузке */
+html {
+  /* Устанавливаем базовые цвета по умолчанию для предотвращения моргания */
+  background-color: #fffbfe;
+  color: #1c1b1f;
+}
+
+/* Применяем темную тему сразу, если она была сохранена */
+html[data-theme="dark"] {
+  background-color: #141218;
+  color: #e6e0e9;
+}
+
 /* CSS Custom Properties для тем */
 :root {
   /* Viewport Height Variables */
