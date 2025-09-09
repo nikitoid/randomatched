@@ -208,12 +208,14 @@ export class ToastManager {
                 position: absolute;
                 bottom: 0;
                 left: 0;
-                height: 3px;
+                height: 4px;
                 background: linear-gradient(90deg, var(--toast-color, #6750a4), var(--toast-color, #6750a4));
                 border-radius: 0 0 12px 12px;
                 transition: width 0.1s ease-out;
-                opacity: 0.7;
+                opacity: 1;
                 will-change: width;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+                z-index: 1;
             }
 
             /* Toast Type Styles */
@@ -227,7 +229,8 @@ export class ToastManager {
             }
 
             .toast.toast-success .toast-progress {
-                background: linear-gradient(90deg, #2e7d32, #2e7d32);
+                background: linear-gradient(90deg, #4caf50, #66bb6a);
+                box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
             }
 
             .toast.toast-error {
@@ -240,7 +243,8 @@ export class ToastManager {
             }
 
             .toast.toast-error .toast-progress {
-                background: linear-gradient(90deg, #c62828, #c62828);
+                background: linear-gradient(90deg, #f44336, #ef5350);
+                box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
             }
 
             .toast.toast-warning {
@@ -253,7 +257,8 @@ export class ToastManager {
             }
 
             .toast.toast-warning .toast-progress {
-                background: linear-gradient(90deg, #ef6c00, #ef6c00);
+                background: linear-gradient(90deg, #ff9800, #ffb74d);
+                box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
             }
 
             .toast.toast-info {
@@ -266,7 +271,8 @@ export class ToastManager {
             }
 
             .toast.toast-info .toast-progress {
-                background: linear-gradient(90deg, #1976d2, #1976d2);
+                background: linear-gradient(90deg, #2196f3, #42a5f5);
+                box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
             }
 
             /* Dark Theme Support */
@@ -310,6 +316,27 @@ export class ToastManager {
 
                 .toast.toast-info .toast-icon {
                     color: #2196f3;
+                }
+
+                /* Dark Theme Progress Bars */
+                .toast.toast-success .toast-progress {
+                    background: linear-gradient(90deg, #4caf50, #66bb6a);
+                    box-shadow: 0 0 12px rgba(76, 175, 80, 0.7);
+                }
+
+                .toast.toast-error .toast-progress {
+                    background: linear-gradient(90deg, #f44336, #ef5350);
+                    box-shadow: 0 0 12px rgba(244, 67, 54, 0.7);
+                }
+
+                .toast.toast-warning .toast-progress {
+                    background: linear-gradient(90deg, #ff9800, #ffb74d);
+                    box-shadow: 0 0 12px rgba(255, 152, 0, 0.7);
+                }
+
+                .toast.toast-info .toast-progress {
+                    background: linear-gradient(90deg, #2196f3, #42a5f5);
+                    box-shadow: 0 0 12px rgba(33, 150, 243, 0.7);
                 }
             }
 
