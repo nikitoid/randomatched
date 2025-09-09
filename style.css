@@ -1622,14 +1622,15 @@ body {
   height: 3px;
   background: linear-gradient(90deg, var(--toast-color, #6750a4), var(--toast-color, #6750a4));
   border-radius: 0 0 12px 12px;
-  transition: width linear;
-  opacity: 0.6;
+  transition: width 0.1s ease-out;
+  opacity: 0.7;
+  will-change: width;
 }
 
 /* Toast Type Styles */
 .toast.toast-success {
-  background: rgba(46, 125, 50, 0.08);
-  border-left: 3px solid rgba(46, 125, 50, 0.3);
+  background: rgba(46, 125, 50, 0.15);
+  border-left: 3px solid rgba(46, 125, 50, 0.4);
 }
 
 .toast.toast-success .toast-icon {
@@ -1641,8 +1642,8 @@ body {
 }
 
 .toast.toast-error {
-  background: rgba(198, 40, 40, 0.08);
-  border-left: 3px solid rgba(198, 40, 40, 0.3);
+  background: rgba(198, 40, 40, 0.15);
+  border-left: 3px solid rgba(198, 40, 40, 0.4);
 }
 
 .toast.toast-error .toast-icon {
@@ -1654,8 +1655,8 @@ body {
 }
 
 .toast.toast-warning {
-  background: rgba(239, 108, 0, 0.08);
-  border-left: 3px solid rgba(239, 108, 0, 0.3);
+  background: rgba(239, 108, 0, 0.15);
+  border-left: 3px solid rgba(239, 108, 0, 0.4);
 }
 
 .toast.toast-warning .toast-icon {
@@ -1667,8 +1668,8 @@ body {
 }
 
 .toast.toast-info {
-  background: rgba(94, 53, 177, 0.08);
-  border-left: 3px solid rgba(94, 53, 177, 0.3);
+  background: rgba(94, 53, 177, 0.15);
+  border-left: 3px solid rgba(94, 53, 177, 0.4);
 }
 
 .toast.toast-info .toast-icon {
@@ -1687,8 +1688,8 @@ body {
   }
 
   .toast.toast-success {
-    background: rgba(76, 175, 80, 0.12);
-    border-left-color: rgba(76, 175, 80, 0.4);
+    background: rgba(76, 175, 80, 0.18);
+    border-left-color: rgba(76, 175, 80, 0.5);
   }
 
   .toast.toast-success .toast-icon {
@@ -1696,8 +1697,8 @@ body {
   }
 
   .toast.toast-error {
-    background: rgba(244, 67, 54, 0.12);
-    border-left-color: rgba(244, 67, 54, 0.4);
+    background: rgba(244, 67, 54, 0.18);
+    border-left-color: rgba(244, 67, 54, 0.5);
   }
 
   .toast.toast-error .toast-icon {
@@ -1705,8 +1706,8 @@ body {
   }
 
   .toast.toast-warning {
-    background: rgba(255, 152, 0, 0.12);
-    border-left-color: rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.18);
+    border-left-color: rgba(255, 152, 0, 0.5);
   }
 
   .toast.toast-warning .toast-icon {
@@ -1714,8 +1715,8 @@ body {
   }
 
   .toast.toast-info {
-    background: rgba(156, 39, 176, 0.12);
-    border-left-color: rgba(156, 39, 176, 0.4);
+    background: rgba(156, 39, 176, 0.18);
+    border-left-color: rgba(156, 39, 176, 0.5);
   }
 
   .toast.toast-info .toast-icon {

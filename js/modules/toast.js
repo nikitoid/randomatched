@@ -16,26 +16,26 @@ export class ToastManager {
             success: {
                 icon: 'check_circle',
                 color: '#2e7d32', // Приглушенный зеленый
-                bgColor: 'rgba(46, 125, 50, 0.8)',
-                borderColor: 'rgba(46, 125, 50, 0.2)'
+                bgColor: 'rgba(46, 125, 50, 0.15)',
+                borderColor: 'rgba(46, 125, 50, 0.3)'
             },
             error: {
                 icon: 'error',
                 color: '#c62828', // Приглушенный красный
-                bgColor: 'rgba(198, 40, 40, 0.8)',
-                borderColor: 'rgba(198, 40, 40, 0.2)'
+                bgColor: 'rgba(198, 40, 40, 0.15)',
+                borderColor: 'rgba(198, 40, 40, 0.3)'
             },
             warning: {
                 icon: 'warning',
                 color: '#ef6c00', // Приглушенный оранжевый
-                bgColor: 'rgba(239, 108, 0, 0.8)',
-                borderColor: 'rgba(239, 108, 0, 0.2)'
+                bgColor: 'rgba(239, 108, 0, 0.15)',
+                borderColor: 'rgba(239, 108, 0, 0.3)'
             },
             info: {
                 icon: 'info',
                 color: '#5e35b1', // Приглушенный фиолетовый
-                bgColor: 'rgba(94, 53, 177, 0.8)',
-                borderColor: 'rgba(94, 53, 177, 0.2)'
+                bgColor: 'rgba(94, 53, 177, 0.15)',
+                borderColor: 'rgba(94, 53, 177, 0.3)'
             }
         };
         
@@ -211,14 +211,15 @@ export class ToastManager {
                 height: 3px;
                 background: linear-gradient(90deg, var(--toast-color, #6750a4), var(--toast-color, #6750a4));
                 border-radius: 0 0 12px 12px;
-                transition: width linear;
-                opacity: 0.6;
+                transition: width 0.1s ease-out;
+                opacity: 0.7;
+                will-change: width;
             }
 
             /* Toast Type Styles */
             .toast.toast-success {
-                background: rgba(46, 125, 50, 0.08);
-                border-left: 3px solid rgba(46, 125, 50, 0.3);
+                background: rgba(46, 125, 50, 0.15);
+                border-left: 3px solid rgba(46, 125, 50, 0.4);
             }
 
             .toast.toast-success .toast-icon {
@@ -230,8 +231,8 @@ export class ToastManager {
             }
 
             .toast.toast-error {
-                background: rgba(198, 40, 40, 0.08);
-                border-left: 3px solid rgba(198, 40, 40, 0.3);
+                background: rgba(198, 40, 40, 0.15);
+                border-left: 3px solid rgba(198, 40, 40, 0.4);
             }
 
             .toast.toast-error .toast-icon {
@@ -243,8 +244,8 @@ export class ToastManager {
             }
 
             .toast.toast-warning {
-                background: rgba(239, 108, 0, 0.08);
-                border-left: 3px solid rgba(239, 108, 0, 0.3);
+                background: rgba(239, 108, 0, 0.15);
+                border-left: 3px solid rgba(239, 108, 0, 0.4);
             }
 
             .toast.toast-warning .toast-icon {
@@ -256,8 +257,8 @@ export class ToastManager {
             }
 
             .toast.toast-info {
-                background: rgba(94, 53, 177, 0.08);
-                border-left: 3px solid rgba(94, 53, 177, 0.3);
+                background: rgba(94, 53, 177, 0.15);
+                border-left: 3px solid rgba(94, 53, 177, 0.4);
             }
 
             .toast.toast-info .toast-icon {
@@ -460,14 +461,20 @@ export class ToastManager {
         if (!progressBar) return;
 
         const startTime = Date.now();
-        const updateInterval = 50; // Обновляем каждые 50мс для плавности
+        const updateInterval = 16; // Обновляем каждые 16мс (60fps) для максимальной плавности
+
+        // Устанавливаем начальную ширину
+        progressBar.style.width = '100%';
 
         toast.progressInterval = setInterval(() => {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const width = (1 - progress) * 100;
             
-            progressBar.style.width = `${width}%`;
+            // Используем requestAnimationFrame для более плавной анимации
+            requestAnimationFrame(() => {
+                progressBar.style.width = `${width}%`;
+            });
             
             if (progress >= 1) {
                 clearInterval(toast.progressInterval);
