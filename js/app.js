@@ -4,6 +4,7 @@
  */
 
 import { ThemeManager } from './modules/theme.js';
+import './modules/modal.js';
 
 class RandomatchedApp {
     constructor() {
@@ -75,7 +76,11 @@ class RandomatchedApp {
             resetSessionBtn: document.getElementById('reset-session-btn'),
             updateIndicator: document.getElementById('update-indicator'),
             updateSpinner: document.getElementById('update-spinner'),
-            updateSuccess: document.getElementById('update-success')
+            updateSuccess: document.getElementById('update-success'),
+            // Демонстрационные кнопки
+            demoFullscreenBtn: document.getElementById('demo-fullscreen-btn'),
+            demoBottomsheetBtn: document.getElementById('demo-bottomsheet-btn'),
+            demoConfirmationBtn: document.getElementById('demo-confirmation-btn')
         };
     }
 
@@ -316,6 +321,19 @@ class RandomatchedApp {
             this.elements.resetSessionBtn.addEventListener('click', () => this.resetSession());
         }
 
+        // Демонстрационные кнопки модальных окон
+        if (this.elements.demoFullscreenBtn) {
+            this.elements.demoFullscreenBtn.addEventListener('click', () => this.demoFullscreenModal());
+        }
+
+        if (this.elements.demoBottomsheetBtn) {
+            this.elements.demoBottomsheetBtn.addEventListener('click', () => this.demoBottomSheet());
+        }
+
+        if (this.elements.demoConfirmationBtn) {
+            this.elements.demoConfirmationBtn.addEventListener('click', () => this.demoConfirmationDialog());
+        }
+
         // Обработка изменений размера окна
         window.addEventListener('resize', () => this.handleResize());
         
@@ -359,8 +377,27 @@ class RandomatchedApp {
      */
     openSettings() {
         console.log('Открытие настроек');
-        // Здесь будет открытие модального окна настроек
-        alert('Функция настроек будет добавлена в следующих версиях!');
+        
+        const settingsContent = `
+            <div class="settings-content">
+                <h3>Настройки приложения</h3>
+                <p>Функция настроек будет добавлена в следующих версиях!</p>
+                <div class="settings-options">
+                    <div class="setting-item">
+                        <label>Тема приложения</label>
+                        <p>Автоматическое переключение темы</p>
+                    </div>
+                    <div class="setting-item">
+                        <label>Уведомления</label>
+                        <p>Включены</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        window.modalManager.createFullscreen('Настройки', settingsContent, {
+            animation: 'slide-up'
+        });
     }
 
     /**
@@ -369,7 +406,14 @@ class RandomatchedApp {
     async generateTeams() {
         try {
             if (!this.currentHeroList) {
-                alert('Пожалуйста, выберите список героев');
+                window.modalManager.createBottomSheet(`
+                    <div class="error-message">
+                        <span class="material-icons">warning</span>
+                        <p>Пожалуйста, выберите список героев</p>
+                    </div>
+                `, {
+                    animation: 'slide-up'
+                });
                 return;
             }
 
@@ -393,7 +437,14 @@ class RandomatchedApp {
             
         } catch (error) {
             console.error('Ошибка генерации команд:', error);
-            alert('Произошла ошибка при генерации команд');
+            window.modalManager.createBottomSheet(`
+                <div class="error-message">
+                    <span class="material-icons">error</span>
+                    <p>Произошла ошибка при генерации команд</p>
+                </div>
+            `, {
+                animation: 'slide-up'
+            });
         } finally {
             this.setButtonLoading(this.elements.generateBtn, false);
         }
@@ -416,19 +467,50 @@ class RandomatchedApp {
      */
     showLastGeneration() {
         if (!this.lastGeneration) {
-            alert('Нет сохраненных генераций');
+            window.modalManager.createBottomSheet(`
+                <div class="info-message">
+                    <span class="material-icons">info</span>
+                    <p>Нет сохраненных генераций</p>
+                </div>
+            `, {
+                animation: 'slide-up'
+            });
             return;
         }
         
         console.log('Показ последней генерации:', this.lastGeneration);
-        alert('Функция просмотра последней генерации будет добавлена в следующих версиях!');
+        
+        const generationContent = `
+            <div class="generation-content">
+                <h3>Последняя генерация</h3>
+                <p>Функция просмотра последней генерации будет добавлена в следующих версиях!</p>
+                <div class="generation-info">
+                    <p><strong>Время:</strong> ${new Date(this.lastGeneration.timestamp).toLocaleString()}</p>
+                    <p><strong>Список героев:</strong> ${this.lastGeneration.heroList}</p>
+                </div>
+            </div>
+        `;
+        
+        window.modalManager.createFullscreen('Последняя генерация', generationContent, {
+            animation: 'fade-in'
+        });
     }
 
     /**
      * Сброс сессии
      */
-    resetSession() {
-        if (confirm('Вы уверены, что хотите сбросить текущую сессию?')) {
+    async resetSession() {
+        const confirmed = await window.modalManager.createConfirmation(
+            'Сброс сессии',
+            'Вы уверены, что хотите сбросить текущую сессию? Все несохраненные данные будут потеряны.',
+            {
+                confirmText: 'Сбросить',
+                cancelText: 'Отмена',
+                confirmClass: 'btn-error'
+            }
+        );
+        
+        if (confirmed) {
             this.currentHeroList = null;
             this.lastGeneration = null;
             
@@ -440,6 +522,16 @@ class RandomatchedApp {
             this.updateLastGenerationButton();
             
             console.log('Сессия сброшена');
+            
+            // Показываем уведомление об успешном сбросе
+            window.modalManager.createBottomSheet(`
+                <div class="success-message">
+                    <span class="material-icons">check_circle</span>
+                    <p>Сессия успешно сброшена</p>
+                </div>
+            `, {
+                animation: 'slide-up'
+            });
         }
     }
 
@@ -616,6 +708,108 @@ class RandomatchedApp {
             
             // Удаляем флаг после показа
             sessionStorage.removeItem('randomatched-update-success');
+        }
+    }
+
+    /**
+     * Демонстрация полноэкранного модального окна
+     */
+    demoFullscreenModal() {
+        const content = `
+            <div class="demo-content">
+                <h2>Полноэкранное модальное окно</h2>
+                <p>Это пример полноэкранного модального окна с анимацией slide-up.</p>
+                
+                <div class="demo-features">
+                    <h3>Возможности:</h3>
+                    <ul>
+                        <li>Полноэкранное отображение</li>
+                        <li>Анимация появления</li>
+                        <li>Кнопка закрытия в заголовке</li>
+                        <li>Блокировка скролла body</li>
+                        <li>Закрытие по Escape</li>
+                        <li>Закрытие по клику на backdrop</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-actions">
+                    <button class="btn btn-primary" onclick="window.modalManager.closeAll()">
+                        <span class="material-icons">close</span>
+                        <span>Закрыть все модальные окна</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        window.modalManager.createFullscreen('Демо: Fullscreen Modal', content, {
+            animation: 'slide-up'
+        });
+    }
+
+    /**
+     * Демонстрация Bottom Sheet
+     */
+    demoBottomSheet() {
+        const content = `
+            <div class="demo-content">
+                <h3>Bottom Sheet</h3>
+                <p>Это пример Bottom Sheet с анимацией slide-up и поддержкой свайпа.</p>
+                
+                <div class="demo-features">
+                    <h4>Возможности:</h4>
+                    <ul>
+                        <li>Выезжает снизу экрана</li>
+                        <li>Максимальная высота 90vh</li>
+                        <li>Swipe down для закрытия</li>
+                        <li>Backdrop с затемнением</li>
+                        <li>Адаптивный дизайн</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-tip">
+                    <span class="material-icons">touch_app</span>
+                    <p>Попробуйте свайпнуть вниз для закрытия</p>
+                </div>
+            </div>
+        `;
+        
+        window.modalManager.createBottomSheet(content, {
+            animation: 'slide-up'
+        });
+    }
+
+    /**
+     * Демонстрация диалога подтверждения
+     */
+    async demoConfirmationDialog() {
+        const result = await window.modalManager.createConfirmation(
+            'Демо: Confirmation Dialog',
+            'Это пример диалога подтверждения с Promise для async/await. Выберите действие:',
+            {
+                confirmText: 'Подтвердить',
+                cancelText: 'Отмена',
+                confirmClass: 'btn-primary'
+            }
+        );
+        
+        if (result) {
+            window.modalManager.createBottomSheet(`
+                <div class="success-message">
+                    <span class="material-icons">check_circle</span>
+                    <p>Вы нажали "Подтвердить"!</p>
+                </div>
+            `, {
+                animation: 'slide-up'
+            });
+        } else {
+            window.modalManager.createBottomSheet(`
+                <div class="info-message">
+                    <span class="material-icons">info</span>
+                    <p>Вы нажали "Отмена"</p>
+                </div>
+            `, {
+                animation: 'slide-up'
+            });
         }
     }
 }
