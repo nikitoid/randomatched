@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Randomatched - PWA приложение для рандомизации">
+    <meta name="theme-color" content="#6750a4">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Randomatched">
+    <meta name="msapplication-TileColor" content="#6750a4">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+    
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f3f0ff',
+                            100: '#e9e5ff',
+                            200: '#d6ceff',
+                            300: '#b8a6ff',
+                            400: '#9c7bff',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/style.css">
+    
+    <title>Randomatched</title>
+</head>
+<body class="bg-surface text-on-surface font-roboto">
+    <!-- Header -->
+    <header class="bg-primary-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold">Randomatched</h1>
+                <button 
+                    class="material-icons text-white hover:bg-primary-700 p-2 rounded-full transition-colors"
+                    @click="toggleTheme"
+                    aria-label="Переключить тему"
+                >
+                    <span x-text="isDark ? 'light_mode' : 'dark_mode'"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Welcome Section -->
+            <section class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-primary-600 mb-4">
+                    Добро пожаловать в Randomatched
+                </h2>
+                <p class="text-lg text-on-surface-variant max-w-2xl mx-auto">
+                    PWA приложение для рандомизации с поддержкой офлайн режима и современным дизайном
+                </p>
+            </section>
+
+            <!-- Features Grid -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
+                    <div class="material-icons text-primary-600 text-4xl mb-4">shuffle</div>
+                    <h3 class="text-xl font-semibold mb-2">Рандомизация</h3>
+                    <p class="text-on-surface-variant">Мощные алгоритмы для случайного выбора элементов</p>
+                </div>
+                
+                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
+                    <div class="material-icons text-primary-600 text-4xl mb-4">offline_bolt</div>
+                    <h3 class="text-xl font-semibold mb-2">Офлайн режим</h3>
+                    <p class="text-on-surface-variant">Работает без интернета благодаря Service Worker</p>
+                </div>
+                
+                <div class="bg-surface-container p-6 rounded-xl shadow-sm border border-outline-variant">
+                    <div class="material-icons text-primary-600 text-4xl mb-4">palette</div>
+                    <h3 class="text-xl font-semibold mb-2">Адаптивный дизайн</h3>
+                    <p class="text-on-surface-variant">Material Design 3 с поддержкой темной темы</p>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="text-center">
+                <button 
+                    class="bg-primary-600 text-white px-8 py-4 rounded-full font-medium hover:bg-primary-700 transition-colors shadow-lg"
+                    @click="startRandomization"
+                >
+                    <span class="material-icons mr-2 align-middle">play_arrow</span>
+                    Начать рандомизацию
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center text-on-surface-variant">
+                <p>&copy; 2024 Randomatched. PWA приложение.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Alpine.js Data -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                isDark: false,
+                
+                init() {
+                    // Проверяем сохраненную тему
+                    const savedTheme = localStorage.getItem('theme');
+                    if (savedTheme) {
+                        this.isDark = savedTheme === 'dark';
+                    } else {
+                        // Автоопределение темы системы
+                        this.isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    }
+                    this.applyTheme();
+                },
+                
+                toggleTheme() {
+                    this.isDark = !this.isDark;
+                    this.applyTheme();
+                    localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+                },
+                
+                applyTheme() {
+                    document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
+                },
+                
+                startRandomization() {
+                    // Заглушка для будущей функциональности
+                    alert('Функция рандомизации будет добавлена в следующих версиях!');
+                }
+            }));
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
