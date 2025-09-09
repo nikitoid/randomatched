@@ -13,9 +13,6 @@ class ModalManager {
         // Привязываем методы к контексту
         this.handleEscape = this.handleEscape.bind(this);
         this.handleBackdropClick = this.handleBackdropClick.bind(this);
-        this.handleSwipeStart = this.handleSwipeStart.bind(this);
-        this.handleSwipeMove = this.handleSwipeMove.bind(this);
-        this.handleSwipeEnd = this.handleSwipeEnd.bind(this);
         
         this.init();
     }
