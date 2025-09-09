@@ -257,16 +257,16 @@ export class ToastManager {
             }
 
             .toast.toast-info {
-                background: rgba(94, 53, 177, 0.95);
-                border-left: 3px solid rgba(94, 53, 177, 0.4);
+                background: rgba(25, 118, 210, 0.95);
+                border-left: 3px solid rgba(25, 118, 210, 0.4);
             }
 
             .toast.toast-info .toast-icon {
-                color: #5e35b1;
+                color: #1976d2;
             }
 
             .toast.toast-info .toast-progress {
-                background: linear-gradient(90deg, #5e35b1, #5e35b1);
+                background: linear-gradient(90deg, #1976d2, #1976d2);
             }
 
             /* Dark Theme Support */
@@ -304,12 +304,12 @@ export class ToastManager {
                 }
 
                 .toast.toast-info {
-                    background: rgba(156, 39, 176, 0.95);
-                    border-left-color: rgba(156, 39, 176, 0.4);
+                    background: rgba(33, 150, 243, 0.95);
+                    border-left-color: rgba(33, 150, 243, 0.4);
                 }
 
                 .toast.toast-info .toast-icon {
-                    color: #9c27b0;
+                    color: #2196f3;
                 }
             }
 
