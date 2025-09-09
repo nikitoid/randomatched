@@ -33,22 +33,28 @@
     <!-- Header с фиксированной позицией -->
     <header class="header-fixed">
         <div class="header-content">
-            <!-- Кнопка смены темы в левом углу -->
-            <button 
-                id="theme-toggle"
-                class="theme-toggle-btn"
-                aria-label="Переключить тему"
-            >
-                <span class="material-icons theme-icon">dark_mode</span>
-            </button>
+            <!-- Левая часть: кнопка смены темы -->
+            <div class="header-left">
+                <button 
+                    id="theme-toggle"
+                    class="theme-toggle-btn"
+                    aria-label="Переключить тему"
+                >
+                    <span class="material-icons theme-icon">dark_mode</span>
+                </button>
+            </div>
             
-            <!-- Заголовок по центру -->
-            <h1 class="header-title">Randomatched</h1>
+            <!-- Центральная часть: заголовок -->
+            <div class="header-center">
+                <h1 class="header-title">Randomatched</h1>
+            </div>
             
-            <!-- Иконка обновления в правом углу -->
-            <div class="update-indicator" id="update-indicator" style="display: none;">
-                <span class="material-icons update-spinner" id="update-spinner">refresh</span>
-                <span class="material-icons update-success" id="update-success" style="display: none;">check_circle</span>
+            <!-- Правая часть: индикатор обновления -->
+            <div class="header-right">
+                <div class="update-indicator" id="update-indicator" style="display: none;">
+                    <span class="material-icons update-spinner" id="update-spinner">refresh</span>
+                    <span class="material-icons update-success" id="update-success" style="display: none;">check_circle</span>
+                </div>
             </div>
         </div>
     </header>
