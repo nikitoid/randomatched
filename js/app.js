@@ -5,6 +5,7 @@
 
 import { ThemeManager } from './modules/theme.js';
 import './modules/modal.js';
+import './modules/toast.js';
 
 class RandomatchedApp {
     constructor() {
@@ -77,10 +78,17 @@ class RandomatchedApp {
             updateIndicator: document.getElementById('update-indicator'),
             updateSpinner: document.getElementById('update-spinner'),
             updateSuccess: document.getElementById('update-success'),
-            // Демонстрационные кнопки
+            // Демонстрационные кнопки модальных окон
             demoFullscreenBtn: document.getElementById('demo-fullscreen-btn'),
             demoBottomsheetBtn: document.getElementById('demo-bottomsheet-btn'),
-            demoConfirmationBtn: document.getElementById('demo-confirmation-btn')
+            demoConfirmationBtn: document.getElementById('demo-confirmation-btn'),
+            // Демонстрационные кнопки toast
+            demoToastSuccessBtn: document.getElementById('demo-toast-success-btn'),
+            demoToastErrorBtn: document.getElementById('demo-toast-error-btn'),
+            demoToastWarningBtn: document.getElementById('demo-toast-warning-btn'),
+            demoToastInfoBtn: document.getElementById('demo-toast-info-btn'),
+            demoToastMultipleBtn: document.getElementById('demo-toast-multiple-btn'),
+            demoToastClearBtn: document.getElementById('demo-toast-clear-btn')
         };
     }
 
@@ -334,6 +342,31 @@ class RandomatchedApp {
             this.elements.demoConfirmationBtn.addEventListener('click', () => this.demoConfirmationDialog());
         }
 
+        // Демонстрационные кнопки toast уведомлений
+        if (this.elements.demoToastSuccessBtn) {
+            this.elements.demoToastSuccessBtn.addEventListener('click', () => this.demoToastSuccess());
+        }
+
+        if (this.elements.demoToastErrorBtn) {
+            this.elements.demoToastErrorBtn.addEventListener('click', () => this.demoToastError());
+        }
+
+        if (this.elements.demoToastWarningBtn) {
+            this.elements.demoToastWarningBtn.addEventListener('click', () => this.demoToastWarning());
+        }
+
+        if (this.elements.demoToastInfoBtn) {
+            this.elements.demoToastInfoBtn.addEventListener('click', () => this.demoToastInfo());
+        }
+
+        if (this.elements.demoToastMultipleBtn) {
+            this.elements.demoToastMultipleBtn.addEventListener('click', () => this.demoToastMultiple());
+        }
+
+        if (this.elements.demoToastClearBtn) {
+            this.elements.demoToastClearBtn.addEventListener('click', () => this.demoToastClear());
+        }
+
         // Обработка изменений размера окна
         window.addEventListener('resize', () => this.handleResize());
         
@@ -524,14 +557,7 @@ class RandomatchedApp {
             console.log('Сессия сброшена');
             
             // Показываем уведомление об успешном сбросе
-            window.modalManager.createBottomSheet(`
-                <div class="success-message">
-                    <span class="material-icons">check_circle</span>
-                    <p>Сессия успешно сброшена</p>
-                </div>
-            `, {
-                animation: 'slide-up'
-            });
+            window.toastManager.show('Сессия успешно сброшена', 'success', 3000);
         }
     }
 
@@ -811,6 +837,61 @@ class RandomatchedApp {
                 animation: 'slide-up'
             });
         }
+    }
+
+    /**
+     * Демонстрация Success Toast
+     */
+    demoToastSuccess() {
+        window.toastManager.show('Операция выполнена успешно!', 'success', 3000);
+    }
+
+    /**
+     * Демонстрация Error Toast
+     */
+    demoToastError() {
+        window.toastManager.show('Произошла ошибка при выполнении операции', 'error', 4000);
+    }
+
+    /**
+     * Демонстрация Warning Toast
+     */
+    demoToastWarning() {
+        window.toastManager.show('Внимание! Проверьте введенные данные', 'warning', 3500);
+    }
+
+    /**
+     * Демонстрация Info Toast
+     */
+    demoToastInfo() {
+        window.toastManager.show('Полезная информация для пользователя', 'info', 3000);
+    }
+
+    /**
+     * Демонстрация множественных Toast
+     */
+    demoToastMultiple() {
+        // Показываем несколько toast подряд для демонстрации очереди
+        const messages = [
+            { message: 'Первое уведомление', type: 'info' },
+            { message: 'Второе уведомление', type: 'success' },
+            { message: 'Третье уведомление', type: 'warning' },
+            { message: 'Четвертое уведомление (в очереди)', type: 'error' },
+            { message: 'Пятое уведомление (в очереди)', type: 'info' }
+        ];
+
+        messages.forEach((item, index) => {
+            setTimeout(() => {
+                window.toastManager.show(item.message, item.type, 2000);
+            }, index * 500);
+        });
+    }
+
+    /**
+     * Очистка всех Toast
+     */
+    demoToastClear() {
+        window.toastManager.clearAll();
     }
 }
 
