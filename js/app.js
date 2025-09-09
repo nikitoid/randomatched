@@ -37,6 +37,9 @@ class RandomatchedApp {
             // Установка обработчиков событий
             this.setupEventListeners();
             
+            // Настройка Service Worker и обновлений
+            this.setupServiceWorker();
+            
             // Инициализация данных
             this.initData();
             
@@ -72,6 +75,96 @@ class RandomatchedApp {
         
         // Подписываемся на изменения системной темы
         this.themeManager.watchSystemTheme();
+    }
+
+    /**
+     * Настройка Service Worker и обработка обновлений
+     */
+    setupServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            // Проверяем наличие обновлений при загрузке
+            navigator.serviceWorker.ready.then(registration => {
+                console.log('[APP] Service Worker готов, проверяем обновления...');
+                this.checkForUpdates(registration);
+            });
+
+            // Слушаем сообщения от Service Worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                this.handleServiceWorkerMessage(event);
+            });
+
+            // Слушаем изменения Service Worker
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('[APP] Service Worker изменился, перезагружаем страницу...');
+                this.handleServiceWorkerUpdate();
+            });
+        }
+    }
+
+    /**
+     * Проверка обновлений Service Worker
+     */
+    checkForUpdates(registration) {
+        if (registration.waiting) {
+            console.log('[APP] Обнаружено ожидающее обновление Service Worker');
+            this.handleUpdateAvailable(registration);
+        }
+
+        // Проверяем обновления в фоне
+        registration.addEventListener('updatefound', () => {
+            console.log('[APP] Обнаружено новое обновление Service Worker');
+            const newWorker = registration.installing;
+            
+            newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[APP] Новый Service Worker установлен и готов к активации');
+                    this.handleUpdateAvailable(registration);
+                }
+            });
+        });
+    }
+
+    /**
+     * Обработка доступного обновления
+     */
+    handleUpdateAvailable(registration) {
+        console.log('[APP] Обновление доступно, активируем...');
+        
+        if (registration.waiting) {
+            // Отправляем команду на активацию обновления
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+    }
+
+    /**
+     * Обработка сообщений от Service Worker
+     */
+    handleServiceWorkerMessage(event) {
+        const { data } = event;
+        
+        if (data.type === 'UPDATE_READY') {
+            console.log('[APP] Получено уведомление о готовности обновления:', data);
+            console.log('[APP] Версия обновления:', data.version);
+            console.log('[APP] Время обновления:', data.timestamp);
+        }
+    }
+
+    /**
+     * Обработка обновления Service Worker
+     */
+    handleServiceWorkerUpdate() {
+        console.log('[APP] Начинаем процесс перезагрузки приложения...');
+        console.log('[APP] Сохраняем текущее состояние приложения...');
+        
+        // Сохраняем данные перед перезагрузкой
+        this.saveData();
+        
+        console.log('[APP] Перезагружаем страницу для применения обновления...');
+        
+        // Небольшая задержка для завершения логирования
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
     }
 
     /**

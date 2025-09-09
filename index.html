@@ -106,14 +106,29 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
+                console.log('[INIT] Начинаем регистрацию Service Worker...');
+                
                 navigator.serviceWorker.register('/service-worker.js')
                     .then((registration) => {
-                        console.log('SW registered: ', registration);
+                        console.log('[INIT] Service Worker успешно зарегистрирован:', registration);
+                        console.log('[INIT] Область действия SW:', registration.scope);
+                        console.log('[INIT] Состояние SW:', registration.active ? registration.active.state : 'не активен');
+                        
+                        // Проверяем наличие обновлений при загрузке
+                        if (registration.waiting) {
+                            console.log('[INIT] Обнаружен ожидающий Service Worker');
+                        }
+                        
+                        if (registration.installing) {
+                            console.log('[INIT] Service Worker в процессе установки');
+                        }
                     })
                     .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
+                        console.error('[INIT] Ошибка регистрации Service Worker:', registrationError);
                     });
             });
+        } else {
+            console.warn('[INIT] Service Worker не поддерживается в данном браузере');
         }
     </script>
 </body>

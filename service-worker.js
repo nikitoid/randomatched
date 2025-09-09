@@ -1,6 +1,6 @@
 // Service Worker для Randomatched PWA
 // Версия кэша для обновления при изменении файлов
-const CACHE_VERSION = 'v1.0.4';
+const CACHE_VERSION = 'v1.0.6';
 const CACHE_NAME = `randomatched-cache-${CACHE_VERSION}`;
 
 // Файлы для кэширования при установке
@@ -27,12 +27,14 @@ const DYNAMIC_CACHE_URLS = [
 
 // Установка Service Worker
 self.addEventListener('install', (event) => {
-  console.log('[SW] Установка Service Worker');
+  console.log(`[SW] Установка Service Worker версии ${CACHE_VERSION}`);
+  console.log('[SW] Время установки:', new Date().toISOString());
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Кэширование статических файлов');
+        console.log('[SW] Список файлов для кэширования:', STATIC_CACHE_URLS);
         // Кэшируем файлы по одному для лучшей обработки ошибок
         return Promise.allSettled(
           STATIC_CACHE_URLS.map(url => 
@@ -47,6 +49,7 @@ self.addEventListener('install', (event) => {
         const successful = results.filter(r => r.status === 'fulfilled').length;
         const failed = results.filter(r => r.status === 'rejected').length;
         console.log(`[SW] Кэширование завершено: ${successful} успешно, ${failed} с ошибками`);
+        console.log('[SW] Принудительная активация нового Service Worker...');
         // Принудительная активация нового SW
         return self.skipWaiting();
       })
@@ -60,11 +63,13 @@ self.addEventListener('install', (event) => {
 
 // Активация Service Worker
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Активация Service Worker');
+  console.log(`[SW] Активация Service Worker версии ${CACHE_VERSION}`);
+  console.log('[SW] Время активации:', new Date().toISOString());
   
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
+        console.log('[SW] Найденные кэши:', cacheNames);
         return Promise.all(
           cacheNames.map((cacheName) => {
             // Удаляем старые кэши
@@ -77,8 +82,12 @@ self.addEventListener('activate', (event) => {
       })
       .then(() => {
         console.log('[SW] Service Worker активирован');
+        console.log('[SW] Принудительное управление всеми клиентами...');
         // Принудительное управление всеми клиентами
         return self.clients.claim();
+      })
+      .then(() => {
+        console.log('[SW] Service Worker готов к работе');
       })
   );
 });
@@ -221,12 +230,30 @@ self.addEventListener('message', (event) => {
   console.log('[SW] Получено сообщение:', event.data);
   
   if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Получена команда на принудительную активацию обновления');
     self.skipWaiting();
   }
   
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({ version: CACHE_VERSION });
   }
+});
+
+// Обработка события контролируемого клиента
+self.addEventListener('controllerchange', (event) => {
+  console.log('[SW] Service Worker получил контроль над клиентом');
+  
+  // Отправляем сообщение всем клиентам о том, что обновление готово
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      console.log('[SW] Уведомляем клиента об готовности обновления');
+      client.postMessage({
+        type: 'UPDATE_READY',
+        version: CACHE_VERSION,
+        timestamp: new Date().toISOString()
+      });
+    });
+  });
 });
 
 console.log('[SW] Service Worker загружен');
