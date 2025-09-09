@@ -14,6 +14,12 @@ class RandomatchedApp {
         // DOM элементы
         this.elements = {};
         
+        // Состояние обновления
+        this.updateState = {
+            isUpdating: false,
+            hasUpdated: false
+        };
+        
         // Инициализация менеджера тем
         this.themeManager = new ThemeManager();
         
@@ -46,6 +52,9 @@ class RandomatchedApp {
             // Инициализация данных
             this.initData();
             
+            // Проверка на успешное обновление после перезагрузки
+            this.checkForSuccessfulUpdate();
+            
             console.log('Randomatched приложение успешно инициализировано');
         } catch (error) {
             console.error('Ошибка инициализации приложения:', error);
@@ -63,7 +72,10 @@ class RandomatchedApp {
             settingsBtn: document.getElementById('settings-btn'),
             generateBtn: document.getElementById('generate-btn'),
             lastGenerationBtn: document.getElementById('last-generation-btn'),
-            resetSessionBtn: document.getElementById('reset-session-btn')
+            resetSessionBtn: document.getElementById('reset-session-btn'),
+            updateIndicator: document.getElementById('update-indicator'),
+            updateSpinner: document.getElementById('update-spinner'),
+            updateSuccess: document.getElementById('update-success')
         };
     }
 
@@ -203,6 +215,9 @@ class RandomatchedApp {
     handleUpdateAvailable(registration) {
         console.log('[APP] Обновление доступно, активируем...');
         
+        // Показываем спиннер обновления
+        this.showUpdateSpinner();
+        
         if (registration.waiting) {
             // Отправляем команду на активацию обновления
             registration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -220,6 +235,17 @@ class RandomatchedApp {
             console.log('[APP] Версия обновления:', data.version);
             console.log('[APP] Время обновления:', data.timestamp);
         }
+        
+        if (data.type === 'UPDATE_STARTING') {
+            console.log('[APP] Получено уведомление о начале обновления:', data);
+            console.log('[APP] Версия обновления:', data.version);
+            console.log('[APP] Время начала обновления:', data.timestamp);
+            
+            // Показываем спиннер, если он еще не показан
+            if (!this.updateState.isUpdating) {
+                this.showUpdateSpinner();
+            }
+        }
     }
 
     /**
@@ -231,6 +257,9 @@ class RandomatchedApp {
         
         // Сохраняем данные перед перезагрузкой
         this.saveData();
+        
+        // Устанавливаем флаг успешного обновления для показа после перезагрузки
+        sessionStorage.setItem('randomatched-update-success', 'true');
         
         console.log('[APP] Перезагружаем страницу для применения обновления...');
         
@@ -525,6 +554,68 @@ class RandomatchedApp {
         
         if (this.lastGeneration) {
             localStorage.setItem('randomatched-last-generation', JSON.stringify(this.lastGeneration));
+        }
+    }
+
+    /**
+     * Показать спиннер обновления
+     */
+    showUpdateSpinner() {
+        if (this.elements.updateIndicator && this.elements.updateSpinner) {
+            this.updateState.isUpdating = true;
+            this.elements.updateIndicator.style.display = 'flex';
+            this.elements.updateSpinner.style.display = 'inline-block';
+            this.elements.updateSuccess.style.display = 'none';
+            console.log('[APP] Показан спиннер обновления');
+        }
+    }
+
+    /**
+     * Скрыть индикатор обновления
+     */
+    hideUpdateIndicator() {
+        if (this.elements.updateIndicator) {
+            this.elements.updateIndicator.style.display = 'none';
+            this.updateState.isUpdating = false;
+            console.log('[APP] Скрыт индикатор обновления');
+        }
+    }
+
+    /**
+     * Показать уведомление об успешном обновлении
+     */
+    showUpdateSuccess() {
+        if (this.elements.updateIndicator && this.elements.updateSuccess) {
+            this.elements.updateIndicator.style.display = 'flex';
+            this.elements.updateSpinner.style.display = 'none';
+            this.elements.updateSuccess.style.display = 'inline-block';
+            this.updateState.hasUpdated = true;
+            
+            console.log('[APP] Показано уведомление об успешном обновлении');
+            
+            // Скрываем уведомление через 2 секунды
+            setTimeout(() => {
+                this.hideUpdateIndicator();
+            }, 2000);
+        }
+    }
+
+    /**
+     * Проверка на успешное обновление после перезагрузки
+     */
+    checkForSuccessfulUpdate() {
+        // Проверяем, было ли обновление в этой сессии
+        const updateFlag = sessionStorage.getItem('randomatched-update-success');
+        
+        if (updateFlag === 'true') {
+            console.log('[APP] Обнаружено успешное обновление, показываем уведомление');
+            // Небольшая задержка для полной загрузки приложения
+            setTimeout(() => {
+                this.showUpdateSuccess();
+            }, 500);
+            
+            // Удаляем флаг после показа
+            sessionStorage.removeItem('randomatched-update-success');
         }
     }
 }

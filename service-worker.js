@@ -1,13 +1,13 @@
 // Service Worker для Randomatched PWA
 // Версия кэша для обновления при изменении файлов
-const CACHE_VERSION = 'v1.0.6';
+const CACHE_VERSION = 'v1.0.7';
 const CACHE_NAME = `randomatched-cache-${CACHE_VERSION}`;
 
 // Файлы для кэширования при установке
 const STATIC_CACHE_URLS = [
   '/',
   '/index.html',
-  '/app.js',
+  '/js/app.js',
   '/style.css',
   '/manifest.json',
   '/favicon.ico',
@@ -231,6 +231,19 @@ self.addEventListener('message', (event) => {
   
   if (event.data && event.data.type === 'SKIP_WAITING') {
     console.log('[SW] Получена команда на принудительную активацию обновления');
+    
+    // Уведомляем клиентов о начале процесса обновления
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        console.log('[SW] Уведомляем клиента о начале обновления');
+        client.postMessage({
+          type: 'UPDATE_STARTING',
+          version: CACHE_VERSION,
+          timestamp: new Date().toISOString()
+        });
+      });
+    });
+    
     self.skipWaiting();
   }
   
