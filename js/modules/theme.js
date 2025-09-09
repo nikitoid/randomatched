@@ -1,6 +1,6 @@
 /**
- * Модуль управления темами
- * Содержит функционал переключения между светлой и темной темой
+ * ThemeManager - Модуль управления темами для Randomatched PWA
+ * Содержит функционал переключения между светлой и темной темой с Material Design
  */
 
 export class ThemeManager {
@@ -18,6 +18,7 @@ export class ThemeManager {
     init() {
         this.loadThemeFromStorage();
         this.applyTheme();
+        console.log('[ThemeManager] Инициализирован');
     }
 
     /**
@@ -126,4 +127,20 @@ export class ThemeManager {
         // Возвращаем функцию для отписки
         return () => mediaQuery.removeEventListener('change', handleChange);
     }
+
+    /**
+     * Уничтожение менеджера тем
+     */
+    destroy() {
+        // Очищаем обработчики событий
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        // Очищаем все обработчики изменения системной темы
+        mediaQuery.removeEventListener('change', () => {});
+    }
 }
+
+// Создаем глобальный экземпляр
+window.themeManager = new ThemeManager();
+
+// Экспортируем для использования в модулях
+export default window.themeManager;

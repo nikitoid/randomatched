@@ -3,7 +3,7 @@
  * Содержит инициализацию, загрузку модулей и обработчики событий
  */
 
-import { ThemeManager } from './modules/theme.js';
+import './modules/theme.js';
 import './modules/modal.js';
 import './modules/toast.js';
 
@@ -22,8 +22,8 @@ class RandomatchedApp {
             hasUpdated: false
         };
         
-        // Инициализация менеджера тем
-        this.themeManager = new ThemeManager();
+        // Используем глобальный экземпляр менеджера тем
+        this.themeManager = window.themeManager;
         
         this.init();
     }
