@@ -1619,14 +1619,31 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 4px;
+  height: 5px;
   background: linear-gradient(90deg, var(--toast-color, #6750a4), var(--toast-color, #6750a4));
   border-radius: 0 0 12px 12px;
   transition: width 0.1s ease-out;
   opacity: 1;
   will-change: width;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-  z-index: 1;
+  box-shadow: 
+    0 0 12px rgba(0, 0, 0, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Progress Bar Background */
+.toast-progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 12px 12px;
+  z-index: -1;
 }
 
 /* Toast Type Styles */
@@ -1640,8 +1657,12 @@ body {
 }
 
 .toast.toast-success .toast-progress {
-  background: linear-gradient(90deg, #4caf50, #66bb6a);
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+  background: linear-gradient(90deg, #00e676, #4caf50, #66bb6a);
+  box-shadow: 
+    0 0 15px rgba(0, 230, 118, 0.8),
+    0 0 8px rgba(76, 175, 80, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 230, 118, 0.6);
 }
 
 .toast.toast-error {
@@ -1654,8 +1675,12 @@ body {
 }
 
 .toast.toast-error .toast-progress {
-  background: linear-gradient(90deg, #f44336, #ef5350);
-  box-shadow: 0 0 8px rgba(244, 67, 54, 0.5);
+  background: linear-gradient(90deg, #ff1744, #f44336, #ef5350);
+  box-shadow: 
+    0 0 15px rgba(255, 23, 68, 0.8),
+    0 0 8px rgba(244, 67, 54, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 23, 68, 0.6);
 }
 
 .toast.toast-warning {
@@ -1668,8 +1693,12 @@ body {
 }
 
 .toast.toast-warning .toast-progress {
-  background: linear-gradient(90deg, #ff9800, #ffb74d);
-  box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+  background: linear-gradient(90deg, #ffc107, #ff9800, #ffb74d);
+  box-shadow: 
+    0 0 15px rgba(255, 193, 7, 0.8),
+    0 0 8px rgba(255, 152, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 193, 7, 0.6);
 }
 
 .toast.toast-info {
@@ -1682,8 +1711,12 @@ body {
 }
 
 .toast.toast-info .toast-progress {
-  background: linear-gradient(90deg, #2196f3, #42a5f5);
-  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+  background: linear-gradient(90deg, #00bcd4, #2196f3, #42a5f5);
+  box-shadow: 
+    0 0 15px rgba(0, 188, 212, 0.8),
+    0 0 8px rgba(33, 150, 243, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 188, 212, 0.6);
 }
 
 /* Dark Theme Support */
@@ -1731,23 +1764,39 @@ body {
 
   /* Dark Theme Progress Bars */
   .toast.toast-success .toast-progress {
-    background: linear-gradient(90deg, #4caf50, #66bb6a);
-    box-shadow: 0 0 12px rgba(76, 175, 80, 0.7);
+    background: linear-gradient(90deg, #00e676, #4caf50, #66bb6a);
+    box-shadow: 
+      0 0 20px rgba(0, 230, 118, 1),
+      0 0 12px rgba(76, 175, 80, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 230, 118, 0.8);
   }
 
   .toast.toast-error .toast-progress {
-    background: linear-gradient(90deg, #f44336, #ef5350);
-    box-shadow: 0 0 12px rgba(244, 67, 54, 0.7);
+    background: linear-gradient(90deg, #ff1744, #f44336, #ef5350);
+    box-shadow: 
+      0 0 20px rgba(255, 23, 68, 1),
+      0 0 12px rgba(244, 67, 54, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 23, 68, 0.8);
   }
 
   .toast.toast-warning .toast-progress {
-    background: linear-gradient(90deg, #ff9800, #ffb74d);
-    box-shadow: 0 0 12px rgba(255, 152, 0, 0.7);
+    background: linear-gradient(90deg, #ffc107, #ff9800, #ffb74d);
+    box-shadow: 
+      0 0 20px rgba(255, 193, 7, 1),
+      0 0 12px rgba(255, 152, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 193, 7, 0.8);
   }
 
   .toast.toast-info .toast-progress {
-    background: linear-gradient(90deg, #2196f3, #42a5f5);
-    box-shadow: 0 0 12px rgba(33, 150, 243, 0.7);
+    background: linear-gradient(90deg, #00bcd4, #2196f3, #42a5f5);
+    box-shadow: 
+      0 0 20px rgba(0, 188, 212, 1),
+      0 0 12px rgba(33, 150, 243, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 188, 212, 0.8);
   }
 }
 
