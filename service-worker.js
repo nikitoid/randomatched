@@ -1,23 +1,19 @@
 // Service Worker для Randomatched PWA
 // Версия кэша для обновления при изменении файлов
-const CACHE_VERSION = 'v1.0.2';
+const CACHE_VERSION = 'v1.0.3';
 const CACHE_NAME = `randomatched-cache-${CACHE_VERSION}`;
 
 // Файлы для кэширования при установке
 const STATIC_CACHE_URLS = [
   '/',
   '/index.html',
+  '/app.js',
   '/style.css',
   '/manifest.json',
   '/favicon.ico',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/icons/apple-touch-icon.png',
-  // CDN ресурсы
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js',
-  'https://fonts.googleapis.com/icon?family=Material+Icons',
-  'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap'
+  '/icons/apple-touch-icon.png'
 ];
 
 // Файлы для кэширования при запросе (динамическое кэширование)
@@ -37,15 +33,27 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Кэширование статических файлов');
-        return cache.addAll(STATIC_CACHE_URLS);
+        // Кэшируем файлы по одному для лучшей обработки ошибок
+        return Promise.allSettled(
+          STATIC_CACHE_URLS.map(url => 
+            cache.add(url).catch(error => {
+              console.warn(`[SW] Не удалось кэшировать ${url}:`, error);
+              return null;
+            })
+          )
+        );
       })
-      .then(() => {
-        console.log('[SW] Статические файлы закэшированы');
+      .then((results) => {
+        const successful = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.filter(r => r.status === 'rejected').length;
+        console.log(`[SW] Кэширование завершено: ${successful} успешно, ${failed} с ошибками`);
         // Принудительная активация нового SW
         return self.skipWaiting();
       })
       .catch((error) => {
-        console.error('[SW] Ошибка при кэшировании:', error);
+        console.error('[SW] Критическая ошибка при установке:', error);
+        // Все равно активируем SW для работы в офлайн режиме
+        return self.skipWaiting();
       })
   );
 });
@@ -80,8 +88,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Пропускаем запросы к внешним доменам (кроме CDN)
-  if (url.origin !== location.origin && !isCDNRequest(url)) {
+  // Пропускаем запросы к внешним доменам (кроме разрешенных CDN)
+  if (url.origin !== location.origin && !isAllowedCDNRequest(url)) {
     return;
   }
   
@@ -106,12 +114,15 @@ self.addEventListener('fetch', (event) => {
             // Клонируем ответ для кэширования
             const responseToCache = networkResponse.clone();
             
-            // Кэшируем только GET запросы
-            if (request.method === 'GET') {
+            // Кэшируем только GET запросы и только локальные ресурсы
+            if (request.method === 'GET' && url.origin === location.origin) {
               caches.open(CACHE_NAME)
                 .then((cache) => {
                   cache.put(request, responseToCache);
                   console.log('[SW] Добавлено в кэш:', request.url);
+                })
+                .catch((error) => {
+                  console.error('[SW] Ошибка кэширования:', error);
                 });
             }
             
@@ -121,7 +132,7 @@ self.addEventListener('fetch', (event) => {
             console.error('[SW] Ошибка сети:', error);
             
             // Возвращаем офлайн страницу для HTML запросов
-            if (request.headers.get('accept').includes('text/html')) {
+            if (request.headers.get('accept') && request.headers.get('accept').includes('text/html')) {
               return caches.match('/index.html');
             }
             
@@ -195,16 +206,14 @@ self.addEventListener('sync', (event) => {
   }
 });
 
-// Вспомогательная функция для определения CDN запросов
-function isCDNRequest(url) {
-  const cdnDomains = [
-    'cdn.tailwindcss.com',
-    'unpkg.com',
+// Вспомогательная функция для определения разрешенных CDN запросов
+function isAllowedCDNRequest(url) {
+  const allowedCDNDomains = [
     'fonts.googleapis.com',
     'fonts.gstatic.com'
   ];
   
-  return cdnDomains.some(domain => url.hostname.includes(domain));
+  return allowedCDNDomains.some(domain => url.hostname.includes(domain));
 }
 
 // Обработка сообщений от клиента
