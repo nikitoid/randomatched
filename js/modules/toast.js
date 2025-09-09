@@ -16,25 +16,25 @@ export class ToastManager {
             success: {
                 icon: 'check_circle',
                 color: '#2e7d32', // Приглушенный зеленый
-                bgColor: 'rgba(46, 125, 50, 0.9)',
+                bgColor: 'rgba(46, 125, 50, 0.95)',
                 borderColor: 'rgba(46, 125, 50, 0.3)'
             },
             error: {
                 icon: 'error',
                 color: '#c62828', // Приглушенный красный
-                bgColor: 'rgba(198, 40, 40, 0.9)',
+                bgColor: 'rgba(198, 40, 40, 0.95)',
                 borderColor: 'rgba(198, 40, 40, 0.3)'
             },
             warning: {
                 icon: 'warning',
                 color: '#ef6c00', // Приглушенный оранжевый
-                bgColor: 'rgba(239, 108, 0, 0.9)',
+                bgColor: 'rgba(239, 108, 0, 0.95)',
                 borderColor: 'rgba(239, 108, 0, 0.3)'
             },
             info: {
                 icon: 'info',
                 color: '#5e35b1', // Приглушенный фиолетовый
-                bgColor: 'rgba(94, 53, 177, 0.9)',
+                bgColor: 'rgba(94, 53, 177, 0.95)',
                 borderColor: 'rgba(94, 53, 177, 0.3)'
             }
         };
@@ -106,7 +106,7 @@ export class ToastManager {
             /* Toast Item */
             .toast {
                 position: relative;
-                background: rgba(236, 230, 240, 0.9);
+                background: rgba(236, 230, 240, 0.95);
                 border: none;
                 border-radius: 12px;
                 padding: 16px;
@@ -218,7 +218,7 @@ export class ToastManager {
 
             /* Toast Type Styles */
             .toast.toast-success {
-                background: rgba(46, 125, 50, 0.9);
+                background: rgba(46, 125, 50, 0.95);
                 border-left: 3px solid rgba(46, 125, 50, 0.4);
             }
 
@@ -231,7 +231,7 @@ export class ToastManager {
             }
 
             .toast.toast-error {
-                background: rgba(198, 40, 40, 0.9);
+                background: rgba(198, 40, 40, 0.95);
                 border-left: 3px solid rgba(198, 40, 40, 0.4);
             }
 
@@ -244,7 +244,7 @@ export class ToastManager {
             }
 
             .toast.toast-warning {
-                background: rgba(239, 108, 0, 0.9);
+                background: rgba(239, 108, 0, 0.95);
                 border-left: 3px solid rgba(239, 108, 0, 0.4);
             }
 
@@ -257,7 +257,7 @@ export class ToastManager {
             }
 
             .toast.toast-info {
-                background: rgba(94, 53, 177, 0.9);
+                background: rgba(94, 53, 177, 0.95);
                 border-left: 3px solid rgba(94, 53, 177, 0.4);
             }
 
@@ -272,12 +272,12 @@ export class ToastManager {
             /* Dark Theme Support */
             @media (prefers-color-scheme: dark) {
                 .toast {
-                    background: rgba(44, 44, 44, 0.9);
+                    background: rgba(44, 44, 44, 0.95);
                     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24), 0 4px 8px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.08);
                 }
 
                 .toast.toast-success {
-                    background: rgba(76, 175, 80, 0.9);
+                    background: rgba(76, 175, 80, 0.95);
                     border-left-color: rgba(76, 175, 80, 0.4);
                 }
 
@@ -286,7 +286,7 @@ export class ToastManager {
                 }
 
                 .toast.toast-error {
-                    background: rgba(244, 67, 54, 0.9);
+                    background: rgba(244, 67, 54, 0.95);
                     border-left-color: rgba(244, 67, 54, 0.4);
                 }
 
@@ -295,7 +295,7 @@ export class ToastManager {
                 }
 
                 .toast.toast-warning {
-                    background: rgba(255, 152, 0, 0.9);
+                    background: rgba(255, 152, 0, 0.95);
                     border-left-color: rgba(255, 152, 0, 0.4);
                 }
 
@@ -304,7 +304,7 @@ export class ToastManager {
                 }
 
                 .toast.toast-info {
-                    background: rgba(156, 39, 176, 0.9);
+                    background: rgba(156, 39, 176, 0.95);
                     border-left-color: rgba(156, 39, 176, 0.4);
                 }
 
