@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Randomatched - PWA приложение для рандомизации">
+    <meta name="description" content="Randomatched - PWA приложение для рандомизации команд в настольных играх">
     <meta name="theme-color" content="#6750a4">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -42,20 +42,25 @@
         })();
     </script>
     
-    <title>Randomatched</title>
+    <title>Randomatched - Генератор команд</title>
 </head>
 <body class="bg-surface text-on-surface">
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Перейти к основному содержимому</a>
+    
     <!-- Header с фиксированной позицией -->
-    <header class="header-fixed">
+    <header class="header-fixed" role="banner">
         <div class="header-content">
             <!-- Левая часть: кнопка смены темы -->
             <div class="header-left">
                 <button 
                     id="theme-toggle"
                     class="theme-toggle-btn"
+                    type="button"
                     aria-label="Переключить тему"
+                    title="Переключить между светлой и темной темой"
                 >
-                    <span class="material-icons theme-icon">dark_mode</span>
+                    <span class="material-icons theme-icon" aria-hidden="true">dark_mode</span>
                 </button>
             </div>
             
@@ -66,112 +71,120 @@
             
             <!-- Правая часть: индикатор обновления -->
             <div class="header-right">
-                <div class="update-indicator" id="update-indicator" style="display: none;">
-                    <span class="material-icons update-spinner" id="update-spinner">refresh</span>
-                    <span class="material-icons update-success" id="update-success" style="display: none;">check_circle</span>
+                <div 
+                    class="update-indicator" 
+                    id="update-indicator" 
+                    style="display: none;"
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Статус обновления приложения"
+                >
+                    <span class="material-icons update-spinner" id="update-spinner" aria-hidden="true">refresh</span>
+                    <span class="material-icons update-success" id="update-success" style="display: none;" aria-hidden="true">check_circle</span>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main контейнер с отступом сверху для header -->
-    <main class="main-content">
+    <main id="main-content" class="main-content" role="main">
         <div class="content-container">
-            <!-- Dropdown для выбора списка героев -->
-            <div class="hero-selection">
+            <!-- Секция выбора списка героев -->
+            <section class="hero-selection" aria-labelledby="hero-selection-title">
+                <h2 id="hero-selection-title" class="sr-only">Выбор списка героев</h2>
                 <div class="dropdown-container">
-                    <select id="hero-list-select" class="hero-dropdown">
+                    <label for="hero-list-select" class="sr-only">Выберите список героев для генерации команд</label>
+                    <select 
+                        id="hero-list-select" 
+                        class="hero-dropdown"
+                        aria-describedby="hero-selection-help"
+                        required
+                    >
                         <option value="">Выберите список героев</option>
                         <option value="default">Стандартный список</option>
                         <option value="custom">Пользовательский список</option>
                     </select>
+                    <div id="hero-selection-help" class="sr-only">
+                        Выберите список героев, из которого будут формироваться команды
+                    </div>
                     
                     <!-- Кнопка настроек справа от dropdown -->
                     <button 
                         id="settings-btn"
                         class="settings-btn"
-                        aria-label="Настройки"
+                        type="button"
+                        aria-label="Открыть настройки приложения"
+                        title="Настройки"
                     >
-                        <span class="material-icons">settings</span>
+                        <span class="material-icons" aria-hidden="true">settings</span>
                     </button>
                 </div>
-            </div>
+            </section>
 
-            <!-- Основные кнопки действий -->
-            <div class="action-buttons">
+            <!-- Секция основных действий -->
+            <section class="action-buttons" aria-labelledby="action-buttons-title">
+                <h2 id="action-buttons-title" class="sr-only">Основные действия</h2>
+                
                 <!-- Primary кнопка "Сгенерировать команды" -->
-                <button id="generate-btn" class="btn btn-primary btn-large">
-                    <span class="material-icons">shuffle</span>
+                <button 
+                    id="generate-btn" 
+                    class="btn btn-primary btn-large"
+                    type="button"
+                    aria-describedby="generate-help"
+                >
+                    <span class="material-icons" aria-hidden="true">shuffle</span>
                     <span>Сгенерировать команды</span>
                 </button>
+                <div id="generate-help" class="sr-only">
+                    Создать случайные команды из выбранного списка героев
+                </div>
 
                 <!-- Secondary кнопки в одной строке -->
-                <div class="secondary-buttons">
+                <div class="secondary-buttons" role="group" aria-label="Дополнительные действия">
                     <!-- Secondary кнопка "Последняя генерация" -->
-                    <button id="last-generation-btn" class="btn btn-secondary">
-                        <span class="material-icons">history</span>
+                    <button 
+                        id="last-generation-btn" 
+                        class="btn btn-secondary"
+                        type="button"
+                        disabled
+                        aria-describedby="last-generation-help"
+                    >
+                        <span class="material-icons" aria-hidden="true">history</span>
                         <span>Последняя генерация</span>
                     </button>
+                    <div id="last-generation-help" class="sr-only">
+                        Просмотреть результат последней генерации команд
+                    </div>
 
                     <!-- Tertiary кнопка "Сброс сессии" -->
-                    <button id="reset-session-btn" class="btn btn-outline">
-                        <span class="material-icons">refresh</span>
+                    <button 
+                        id="reset-session-btn" 
+                        class="btn btn-outline"
+                        type="button"
+                        aria-describedby="reset-help"
+                    >
+                        <span class="material-icons" aria-hidden="true">refresh</span>
                         <span>Сброс сессии</span>
                     </button>
+                    <div id="reset-help" class="sr-only">
+                        Очистить текущую сессию и сбросить все данные
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Демонстрационные кнопки для модальных окон -->
-            <div class="demo-buttons">
-                <h3>Демонстрация модальных окон</h3>
-                <div class="demo-buttons-grid">
-                    <button id="demo-fullscreen-btn" class="btn btn-outline">
-                        <span class="material-icons">fullscreen</span>
-                        <span>Fullscreen Modal</span>
-                    </button>
-                    <button id="demo-bottomsheet-btn" class="btn btn-outline">
-                        <span class="material-icons">keyboard_arrow_up</span>
-                        <span>Bottom Sheet</span>
-                    </button>
-                    <button id="demo-confirmation-btn" class="btn btn-outline">
-                        <span class="material-icons">help_outline</span>
-                        <span>Confirmation Dialog</span>
-                    </button>
+            <!-- Секция результатов генерации -->
+            <section class="generation-results" id="generation-results" aria-labelledby="results-title" style="display: none;">
+                <h2 id="results-title" class="sr-only">Результаты генерации команд</h2>
+                <div class="results-container" id="results-container">
+                    <!-- Результаты будут добавлены динамически -->
                 </div>
-            </div>
+            </section>
 
-            <!-- Демонстрационные кнопки для toast уведомлений -->
-            <div class="demo-buttons">
-                <h3>Демонстрация toast уведомлений</h3>
-                <div class="demo-buttons-grid">
-                    <button id="demo-toast-success-btn" class="btn btn-outline">
-                        <span class="material-icons">check_circle</span>
-                        <span>Success Toast</span>
-                    </button>
-                    <button id="demo-toast-error-btn" class="btn btn-outline">
-                        <span class="material-icons">error</span>
-                        <span>Error Toast</span>
-                    </button>
-                    <button id="demo-toast-warning-btn" class="btn btn-outline">
-                        <span class="material-icons">warning</span>
-                        <span>Warning Toast</span>
-                    </button>
-                    <button id="demo-toast-info-btn" class="btn btn-outline">
-                        <span class="material-icons">info</span>
-                        <span>Info Toast</span>
-                    </button>
-                    <button id="demo-toast-multiple-btn" class="btn btn-outline">
-                        <span class="material-icons">notifications</span>
-                        <span>Multiple Toasts</span>
-                    </button>
-                    <button id="demo-toast-clear-btn" class="btn btn-outline">
-                        <span class="material-icons">clear_all</span>
-                        <span>Clear All</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </main>
+
+    <!-- Скрытые элементы для скрин-ридеров -->
+    <div class="sr-only" aria-live="polite" id="announcements"></div>
 
     <!-- Подключение основного скрипта -->
     <script type="module" src="/js/app.js"></script>
