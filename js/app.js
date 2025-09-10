@@ -6,6 +6,7 @@
 import './modules/theme.js';
 import './modules/modal.js';
 import './modules/toast.js';
+import './modules/storage.js';
 
 class RandomatchedApp {
     constructor() {
@@ -22,8 +23,9 @@ class RandomatchedApp {
             hasUpdated: false
         };
         
-        // Используем глобальный экземпляр менеджера тем
+        // Используем глобальные экземпляры менеджеров
         this.themeManager = window.themeManager;
+        this.storageManager = window.storageManager;
         
         this.init();
     }
@@ -334,8 +336,9 @@ class RandomatchedApp {
         
         console.log('Выбран список героев:', selectedValue);
         
-        // Здесь будет логика загрузки списка героев
+        // Устанавливаем активный список в storage
         if (selectedValue) {
+            this.storageManager.setActiveList(selectedValue);
             this.loadHeroList(selectedValue);
         }
     }
@@ -343,12 +346,15 @@ class RandomatchedApp {
     /**
      * Загрузка списка героев
      */
-    async loadHeroList(listType) {
+    async loadHeroList(listId) {
         try {
-            // Заглушка для будущей функциональности
-            console.log('Загрузка списка героев:', listType);
-            
-            // Здесь будет загрузка данных из модуля storage или API
+            const list = this.storageManager.getList(listId);
+            if (list) {
+                console.log('Загружен список героев:', list.name, 'с', list.heroes.length, 'героями');
+                // Здесь можно добавить логику обновления UI с героями
+            } else {
+                console.warn('Список героев не найден:', listId);
+            }
         } catch (error) {
             console.error('Ошибка загрузки списка героев:', error);
         }
@@ -411,8 +417,11 @@ class RandomatchedApp {
             this.lastGeneration = {
                 timestamp: new Date().toISOString(),
                 heroList: this.currentHeroList,
-                teams: [] // Здесь будут сгенерированные команды
+                players: [] // Здесь будут сгенерированные игроки
             };
+            
+            // Сохраняем в storage
+            this.storageManager.saveLastGeneration(this.lastGeneration);
             
             // Обновляем кнопку последней генерации
             this.updateLastGenerationButton();
@@ -493,6 +502,9 @@ class RandomatchedApp {
         );
         
         if (confirmed) {
+            // Очищаем сессию через storage manager
+            const deletedCount = this.storageManager.clearSession();
+            
             this.currentHeroList = null;
             this.lastGeneration = null;
             
@@ -503,10 +515,10 @@ class RandomatchedApp {
             
             this.updateLastGenerationButton();
             
-            console.log('Сессия сброшена');
+            console.log('Сессия сброшена, удалено временных списков:', deletedCount);
             
             // Показываем уведомление об успешном сбросе
-            window.toastManager.show('Сессия успешно сброшена', 'success', 3000);
+            window.toastManager.show(`Сессия сброшена (удалено ${deletedCount} временных списков)`, 'success', 3000);
         }
     }
 
@@ -546,21 +558,24 @@ class RandomatchedApp {
      * Инициализация данных
      */
     initData() {
-        // Загрузка сохраненных данных из localStorage
-        const savedHeroList = localStorage.getItem('randomatched-hero-list');
-        if (savedHeroList && this.elements.heroListSelect) {
-            this.elements.heroListSelect.value = savedHeroList;
-            this.currentHeroList = savedHeroList;
+        // Загрузка активного списка героев
+        const activeList = this.storageManager.getActiveList();
+        if (activeList && this.elements.heroListSelect) {
+            this.elements.heroListSelect.value = activeList.id;
+            this.currentHeroList = activeList.id;
         }
         
-        const savedGeneration = localStorage.getItem('randomatched-last-generation');
-        if (savedGeneration) {
-            try {
-                this.lastGeneration = JSON.parse(savedGeneration);
-                this.updateLastGenerationButton();
-            } catch (error) {
-                console.error('Ошибка загрузки последней генерации:', error);
-            }
+        // Загрузка последней генерации
+        const lastGeneration = this.storageManager.getLastGeneration();
+        if (lastGeneration) {
+            this.lastGeneration = lastGeneration;
+            this.updateLastGenerationButton();
+        }
+
+        // Загрузка темы
+        const theme = this.storageManager.getTheme();
+        if (theme && this.themeManager) {
+            this.themeManager.setTheme(theme);
         }
     }
 
@@ -615,13 +630,9 @@ class RandomatchedApp {
      * Сохранение данных в localStorage
      */
     saveData() {
-        if (this.currentHeroList) {
-            localStorage.setItem('randomatched-hero-list', this.currentHeroList);
-        }
-        
-        if (this.lastGeneration) {
-            localStorage.setItem('randomatched-last-generation', JSON.stringify(this.lastGeneration));
-        }
+        // Данные теперь сохраняются автоматически через StorageManager
+        // Этот метод оставлен для совместимости
+        console.log('Данные сохраняются автоматически через StorageManager');
     }
 
     /**
