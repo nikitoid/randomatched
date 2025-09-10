@@ -27,6 +27,19 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/style.css">
     
+    <!-- Скрипт для корректной работы vh на мобильных устройствах -->
+    <script>
+        function setVh() {
+            document.documentElement.style.setProperty(
+                "--vh",
+                `${window.innerHeight * 0.01}px`
+            );
+        }
+        window.addEventListener("resize", setVh);
+        window.addEventListener("orientationchange", setVh);
+        setVh();
+    </script>
+    
     <!-- Inline script для предотвращения моргания темы -->
     <script>
         (function() {

@@ -18,6 +18,12 @@ html[data-theme="dark"] {
   color: #e6e0e9;
 }
 
+/* Фикс для корректной высоты на мобильных устройствах */
+html.h-screen {
+  height: 100vh; /* Фоллбэк для десктопов */
+  height: calc(var(--vh, 1vh) * 100);
+}
+
 /* ===== CSS ПЕРЕМЕННЫЕ ===== */
 :root {
   /* Viewport */
@@ -188,6 +194,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
+  -webkit-tap-highlight-color: transparent; /* Отключение подсветки при нажатии на мобильных */
 }
 
 /* ===== ТИПОГРАФИКА ===== */
@@ -1616,6 +1623,42 @@ body {
     bottom: 0 !important;
     height: calc(var(--vh-dynamic) - 56px) !important;
   }
+}
+
+/* ===== PWA СТАБИЛИЗАЦИЯ ===== */
+.viewport-stabilizing {
+  * {
+    transition: none !important;
+  }
+  
+  .header-fixed {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 56px !important;
+    z-index: 1000 !important;
+  }
+  
+  .main-content {
+    position: fixed !important;
+    top: 56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(var(--vh-dynamic) - 56px) !important;
+    overflow: hidden !important;
+  }
+}
+
+@keyframes viewportStabilize {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+.viewport-stabilized {
+  animation: viewportStabilize 0.3s ease-out;
 }
 
 /* ===== PWA МОБИЛЬНЫЕ ===== */
