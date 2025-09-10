@@ -189,6 +189,9 @@ html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Отключаем скролл страницы */
+  overflow: hidden;
+  height: 100%;
 }
 
 body {
@@ -204,10 +207,12 @@ body {
               color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Предотвращаем сдвиг элементов при изменении viewport */
-  overflow-x: hidden;
-  position: relative;
-  min-height: var(--vh-100-dynamic);
+  /* Отключаем скролл и фиксируем размеры */
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  height: var(--vh-100-dynamic);
 }
 
 /* Typography Classes */
@@ -456,7 +461,7 @@ body {
     height: calc(var(--vh-100-dynamic) - 56px);
     min-height: calc(var(--vh-100-dynamic) - 56px);
     max-height: calc(var(--vh-100-dynamic) - 56px);
-    overflow-y: auto;
+    overflow: hidden;
     /* Плавная прокрутка */
     -webkit-overflow-scrolling: touch;
   }
@@ -678,13 +683,18 @@ body {
 
 /* Main Content Styles */
 .main-content {
-  margin-top: 56px;
-  min-height: calc(var(--vh-100-dynamic) - 56px);
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--vh-100-dynamic) - 56px);
   padding: var(--md-sys-spacing-4);
   background-color: var(--md-sys-color-background);
   transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .content-container {
@@ -692,18 +702,19 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--md-sys-spacing-8);
+  gap: var(--md-sys-spacing-6);
   flex: 1;
-  justify-content: space-between;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Hero Selection Styles */
 .hero-selection {
-  margin-bottom: var(--md-sys-spacing-4);
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .dropdown-container {
@@ -776,7 +787,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--md-sys-spacing-4);
-  margin-top: auto;
+  flex: 0 0 auto;
 }
 
 .secondary-buttons {
@@ -905,6 +916,7 @@ body {
   
   .content-container {
     gap: var(--md-sys-spacing-6);
+    height: 100%;
   }
   
   .header-title {
@@ -938,7 +950,7 @@ body {
   .content-container {
     gap: var(--md-sys-spacing-4);
     /* Обеспечиваем правильное распределение пространства */
-    min-height: calc(100% - var(--md-sys-spacing-4));
+    height: 100%;
   }
   
   .header-content {
@@ -950,7 +962,7 @@ body {
   }
   
   .hero-selection {
-    margin-bottom: var(--md-sys-spacing-6);
+    flex: 0 0 auto;
   }
   
   .dropdown-container {
@@ -971,6 +983,7 @@ body {
   
   .action-buttons {
     gap: var(--md-sys-spacing-3);
+    flex: 0 0 auto;
   }
   
   .secondary-buttons {
