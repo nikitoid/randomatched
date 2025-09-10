@@ -554,6 +554,16 @@ body {
   transition: all var(--duration-normal) var(--easing-standard);
 }
 
+/* Принудительное вращение спиннера */
+.update-spinner.force-spin {
+  animation: spin 1s linear infinite !important;
+}
+
+/* Класс для стабилизации во время обновления PWA */
+.pwa-updating .update-spinner {
+  animation: spin 1s linear infinite !important;
+}
+
 .update-success {
   font-size: 24px;
   color: #4caf50;

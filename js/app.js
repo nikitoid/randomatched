@@ -251,6 +251,9 @@ class RandomatchedApp {
         // Добавляем класс для стабилизации viewport во время обновления
         document.body.classList.add('pwa-updating');
         
+        // Убеждаемся, что спиннер продолжает вращаться
+        this.ensureSpinnerRunning();
+        
         // Сохраняем данные перед перезагрузкой
         this.saveData();
         
@@ -630,7 +633,30 @@ class RandomatchedApp {
             this.elements.updateIndicator.style.display = 'flex';
             this.elements.updateSpinner.style.display = 'inline-block';
             this.elements.updateSuccess.style.display = 'none';
+            
+            // Принудительно запускаем анимацию
+            this.ensureSpinnerRunning();
+            
             console.log('[APP] Показан спиннер обновления');
+        }
+    }
+
+    /**
+     * Убедиться, что спиннер продолжает вращаться
+     */
+    ensureSpinnerRunning() {
+        if (this.elements.updateSpinner) {
+            // Добавляем класс для принудительного вращения
+            this.elements.updateSpinner.classList.add('force-spin');
+            
+            // Принудительно перезапускаем анимацию
+            this.elements.updateSpinner.style.animation = 'none';
+            // Небольшая задержка для сброса анимации
+            setTimeout(() => {
+                this.elements.updateSpinner.style.animation = 'spin 1s linear infinite';
+            }, 10);
+            
+            console.log('[APP] Спиннер принудительно перезапущен');
         }
     }
 
@@ -655,6 +681,11 @@ class RandomatchedApp {
             this.elements.updateSuccess.style.display = 'inline-block';
             this.updateState.hasUpdated = true;
             
+            // Убираем класс принудительного вращения
+            if (this.elements.updateSpinner) {
+                this.elements.updateSpinner.classList.remove('force-spin');
+            }
+            
             console.log('[APP] Показано уведомление об успешном обновлении');
             
             // Скрываем уведомление через 2 секунды
@@ -672,7 +703,10 @@ class RandomatchedApp {
         const updateFlag = sessionStorage.getItem('randomatched-update-success');
         
         if (updateFlag === 'true') {
-            console.log('[APP] Обнаружено успешное обновление, показываем уведомление');
+            console.log('[APP] Обнаружено успешное обновление, показываем спиннер');
+            
+            // Сначала показываем спиннер, чтобы он продолжал вращаться
+            this.showUpdateSpinner();
             
             // Убираем класс pwa-updating, если он был установлен
             document.body.classList.remove('pwa-updating');
@@ -684,10 +718,10 @@ class RandomatchedApp {
                 }, 200);
             }
             
-            // Небольшая задержка для полной загрузки приложения
+            // Небольшая задержка для полной загрузки приложения, затем показываем успех
             setTimeout(() => {
                 this.showUpdateSuccess();
-            }, 500);
+            }, 1000);
             
             // Удаляем флаг после показа
             sessionStorage.removeItem('randomatched-update-success');
