@@ -5,6 +5,11 @@ html {
   /* Устанавливаем базовые цвета по умолчанию для предотвращения моргания */
   background-color: #fffbfe;
   color: #1c1b1f;
+  /* Предотвращаем смещение элементов при обновлении PWA */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Применяем темную тему сразу, если она была сохранена */
@@ -213,6 +218,11 @@ body {
   width: 100%;
   height: 100%;
   height: var(--vh-100-dynamic);
+  /* Предотвращаем смещение элементов при обновлении PWA */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* Typography Classes */
@@ -1869,4 +1879,124 @@ body {
   .toast.swipe-right {
     transform: translateY(-100%);
   }
+}
+
+/* ========================================
+   PWA UPDATE VIEWPORT STABILIZATION
+   ======================================== */
+
+/* Специальные стили для предотвращения смещения элементов при обновлении PWA */
+.pwa-updating {
+  /* Блокируем все анимации и переходы во время обновления */
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  /* Фиксируем позиции всех элементов */
+  .header-fixed,
+  .main-content,
+  .content-container {
+    position: fixed !important;
+    transform: none !important;
+  }
+  
+  /* Предотвращаем изменение размеров */
+  .header-fixed {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 56px !important;
+  }
+  
+  .main-content {
+    top: 56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(var(--vh-100-dynamic) - 56px) !important;
+  }
+}
+
+/* Дополнительная стабилизация для мобильных устройств */
+@media (max-width: 768px) {
+  .pwa-updating {
+    /* Принудительно фиксируем высоту viewport */
+    html, body {
+      height: 100vh !important;
+      height: var(--vh-100-dynamic) !important;
+      max-height: 100vh !important;
+      max-height: var(--vh-100-dynamic) !important;
+      min-height: 100vh !important;
+      min-height: var(--vh-100-dynamic) !important;
+    }
+    
+    /* Предотвращаем bounce-эффект на iOS */
+    body {
+      overscroll-behavior: none !important;
+      -webkit-overflow-scrolling: touch !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+    }
+    
+    /* Фиксируем контент */
+    .main-content {
+      position: fixed !important;
+      top: 56px !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      height: calc(100vh - 56px) !important;
+      height: calc(var(--vh-100-dynamic) - 56px) !important;
+      overflow: hidden !important;
+    }
+  }
+}
+
+/* Стили для предотвращения мерцания при обновлении */
+.viewport-stabilizing {
+  /* Временно отключаем все переходы */
+  * {
+    transition: none !important;
+  }
+  
+  /* Фиксируем позиции элементов */
+  .header-fixed {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 56px !important;
+    z-index: 1000 !important;
+  }
+  
+  .main-content {
+    position: fixed !important;
+    top: 56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(var(--vh-100-dynamic) - 56px) !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Анимация для плавного восстановления после стабилизации */
+@keyframes viewportStabilize {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.viewport-stabilized {
+  animation: viewportStabilize 0.3s ease-out;
 }

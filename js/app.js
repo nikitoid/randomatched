@@ -87,15 +87,16 @@ class RandomatchedApp {
     setupViewportHeight() {
         let lastHeight = window.innerHeight;
         let isUpdating = false;
+        let stabilizationTimeout = null;
 
         // Функция для обновления CSS переменных высоты viewport
-        const updateViewportHeight = () => {
-            if (isUpdating) return;
+        const updateViewportHeight = (force = false) => {
+            if (isUpdating && !force) return;
             
             const currentHeight = window.innerHeight;
             
-            // Обновляем только если высота действительно изменилась
-            if (Math.abs(currentHeight - lastHeight) > 1) {
+            // Обновляем только если высота действительно изменилась или принудительно
+            if (force || Math.abs(currentHeight - lastHeight) > 1) {
                 isUpdating = true;
                 
                 const vh = currentHeight * 0.01;
@@ -114,8 +115,53 @@ class RandomatchedApp {
             }
         };
 
+        // Функция для стабилизации viewport после обновления
+        const stabilizeViewport = () => {
+            console.log('[VIEWPORT] Начинаем стабилизацию viewport после обновления');
+            
+            // Очищаем предыдущий таймаут
+            if (stabilizationTimeout) {
+                clearTimeout(stabilizationTimeout);
+            }
+            
+            // Добавляем класс стабилизации для предотвращения смещения
+            document.body.classList.add('viewport-stabilizing');
+            
+            // Принудительно обновляем высоту несколько раз с интервалами
+            updateViewportHeight(true);
+            
+            stabilizationTimeout = setTimeout(() => {
+                updateViewportHeight(true);
+                console.log('[VIEWPORT] Первая стабилизация viewport');
+            }, 100);
+            
+            stabilizationTimeout = setTimeout(() => {
+                updateViewportHeight(true);
+                console.log('[VIEWPORT] Вторая стабилизация viewport');
+            }, 300);
+            
+            stabilizationTimeout = setTimeout(() => {
+                updateViewportHeight(true);
+                console.log('[VIEWPORT] Финальная стабилизация viewport');
+            }, 600);
+            
+            stabilizationTimeout = setTimeout(() => {
+                updateViewportHeight(true);
+                console.log('[VIEWPORT] Viewport стабилизирован');
+                
+                // Убираем класс стабилизации и добавляем класс завершения
+                document.body.classList.remove('viewport-stabilizing');
+                document.body.classList.add('viewport-stabilized');
+                
+                // Убираем класс завершения через короткое время
+                setTimeout(() => {
+                    document.body.classList.remove('viewport-stabilized');
+                }, 300);
+            }, 1000);
+        };
+
         // Устанавливаем начальное значение
-        updateViewportHeight();
+        updateViewportHeight(true);
 
         // Обновляем при изменении размера окна
         window.addEventListener('resize', updateViewportHeight);
@@ -123,8 +169,9 @@ class RandomatchedApp {
         // Обновляем при изменении ориентации устройства
         window.addEventListener('orientationchange', () => {
             // Задержка для корректного получения размеров после поворота
-            setTimeout(updateViewportHeight, 100);
-            setTimeout(updateViewportHeight, 300); // Дополнительная проверка
+            setTimeout(() => updateViewportHeight(true), 100);
+            setTimeout(() => updateViewportHeight(true), 300); // Дополнительная проверка
+            setTimeout(() => updateViewportHeight(true), 600); // Финальная проверка
         });
 
         // Обновляем при скролле (для браузеров, которые скрывают/показывают адресную строку)
@@ -142,13 +189,36 @@ class RandomatchedApp {
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         // Дополнительная проверка при фокусе/разфокусе окна
-        window.addEventListener('focus', updateViewportHeight);
-        window.addEventListener('blur', updateViewportHeight);
+        window.addEventListener('focus', () => updateViewportHeight(true));
+        window.addEventListener('blur', () => updateViewportHeight(true));
 
         // Периодическая проверка для дополнительной стабильности
-        setInterval(updateViewportHeight, 1000);
+        setInterval(() => updateViewportHeight(true), 2000);
 
-        console.log('[VIEWPORT] Динамическая высота viewport настроена');
+        // Стабилизация при загрузке страницы (особенно важно после обновления PWA)
+        window.addEventListener('load', () => {
+            console.log('[VIEWPORT] Страница загружена, стабилизируем viewport');
+            setTimeout(stabilizeViewport, 100);
+        });
+
+        // Стабилизация при DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[VIEWPORT] DOM загружен, стабилизируем viewport');
+            setTimeout(stabilizeViewport, 50);
+        });
+
+        // Стабилизация при изменении видимости страницы
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                console.log('[VIEWPORT] Страница стала видимой, стабилизируем viewport');
+                setTimeout(stabilizeViewport, 100);
+            }
+        });
+
+        // Экспортируем функцию стабилизации для использования при обновлении
+        this.stabilizeViewport = stabilizeViewport;
+
+        console.log('[VIEWPORT] Динамическая высота viewport настроена с улучшенной стабилизацией');
     }
 
     /**
@@ -257,11 +327,17 @@ class RandomatchedApp {
         console.log('[APP] Начинаем процесс перезагрузки приложения...');
         console.log('[APP] Сохраняем текущее состояние приложения...');
         
+        // Добавляем класс для стабилизации viewport во время обновления
+        document.body.classList.add('pwa-updating');
+        
         // Сохраняем данные перед перезагрузкой
         this.saveData();
         
         // Устанавливаем флаг успешного обновления для показа после перезагрузки
         sessionStorage.setItem('randomatched-update-success', 'true');
+        
+        // Устанавливаем флаг обновления PWA для дополнительной стабилизации viewport
+        sessionStorage.setItem('randomatched-pwa-update', 'true');
         
         console.log('[APP] Перезагружаем страницу для применения обновления...');
         
@@ -676,9 +752,41 @@ class RandomatchedApp {
     checkForSuccessfulUpdate() {
         // Проверяем, было ли обновление в этой сессии
         const updateFlag = sessionStorage.getItem('randomatched-update-success');
+        const pwaUpdateFlag = sessionStorage.getItem('randomatched-pwa-update');
         
         if (updateFlag === 'true') {
             console.log('[APP] Обнаружено успешное обновление, показываем уведомление');
+            
+            // Если это обновление PWA, запускаем дополнительную стабилизацию viewport
+            if (pwaUpdateFlag === 'true') {
+                console.log('[APP] Обнаружено обновление PWA, запускаем дополнительную стабилизацию viewport');
+                
+                // Убираем класс pwa-updating, если он был установлен
+                document.body.classList.remove('pwa-updating');
+                
+                // Запускаем стабилизацию viewport несколько раз с интервалами
+                setTimeout(() => {
+                    if (this.stabilizeViewport) {
+                        this.stabilizeViewport();
+                    }
+                }, 200);
+                
+                setTimeout(() => {
+                    if (this.stabilizeViewport) {
+                        this.stabilizeViewport();
+                    }
+                }, 800);
+                
+                setTimeout(() => {
+                    if (this.stabilizeViewport) {
+                        this.stabilizeViewport();
+                    }
+                }, 1500);
+                
+                // Удаляем флаг PWA обновления
+                sessionStorage.removeItem('randomatched-pwa-update');
+            }
+            
             // Небольшая задержка для полной загрузки приложения
             setTimeout(() => {
                 this.showUpdateSuccess();
