@@ -57,6 +57,9 @@ class RandomatchedApp {
             // Проверка на успешное обновление после перезагрузки
             this.checkForSuccessfulUpdate();
             
+            // ВРЕМЕННО: Отображение версии кэша для разработки
+            this.displayCacheVersion();
+            
             console.log('Randomatched приложение успешно инициализировано');
         } catch (error) {
             console.error('Ошибка инициализации приложения:', error);
@@ -734,6 +737,54 @@ class RandomatchedApp {
             
             // Удаляем флаг после показа
             sessionStorage.removeItem('randomatched-update-success');
+        }
+    }
+
+    /**
+     * ВРЕМЕННО: Отображение версии кэша для разработки
+     * Этот метод можно удалить после завершения разработки
+     */
+    async displayCacheVersion() {
+        try {
+            // Получаем версию кэша из Service Worker
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.ready;
+                if (registration.active) {
+                    // Создаем канал для связи с Service Worker
+                    const messageChannel = new MessageChannel();
+                    
+                    // Отправляем запрос версии
+                    registration.active.postMessage({ type: 'GET_VERSION' }, [messageChannel.port2]);
+                    
+                    // Слушаем ответ
+                    messageChannel.port1.onmessage = (event) => {
+                        const version = event.data.version;
+                        console.log(`[APP] Текущая версия кэша: ${version}`);
+                        
+                        // Обновляем отображение в шапке
+                        const versionDisplay = document.getElementById('cache-version-display');
+                        if (versionDisplay) {
+                            versionDisplay.textContent = version;
+                        }
+                    };
+                } else {
+                    console.warn('[APP] Service Worker не активен, используем версию по умолчанию');
+                    // Используем версию по умолчанию из конфига
+                    const versionDisplay = document.getElementById('cache-version-display');
+                    if (versionDisplay) {
+                        versionDisplay.textContent = 'v1.0.25'; // Версия из конфига
+                    }
+                }
+            } else {
+                console.warn('[APP] Service Worker не поддерживается');
+            }
+        } catch (error) {
+            console.error('[APP] Ошибка получения версии кэша:', error);
+            // В случае ошибки показываем версию по умолчанию
+            const versionDisplay = document.getElementById('cache-version-display');
+            if (versionDisplay) {
+                versionDisplay.textContent = 'v1.0.25';
+            }
         }
     }
 

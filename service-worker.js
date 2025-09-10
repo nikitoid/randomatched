@@ -5,6 +5,10 @@ importScripts('/js/configs/app-config.js');
 // Получение версии кэша и имени кэша из конфигурации
 const CACHE_NAME = APP_CONFIG.cache.name;
 
+// Логирование текущей версии кэша
+console.log(`[SW] Загружен Service Worker с версией кэша: ${CACHE_VERSION}`);
+console.log(`[SW] Имя кэша: ${CACHE_NAME}`);
+
 // Файлы для кэширования при установке
 const STATIC_CACHE_URLS = [
   '/',
