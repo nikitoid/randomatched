@@ -7,6 +7,7 @@ import './modules/theme.js';
 import './modules/modal.js';
 import './modules/toast.js';
 import './modules/storage.js';
+import './modules/results.js';
 
 class RandomatchedApp {
     constructor() {
@@ -410,14 +411,14 @@ class RandomatchedApp {
             // Показываем индикатор загрузки
             this.setButtonLoading(this.elements.generateBtn, true);
             
-            // Здесь будет логика генерации команд
-            await this.simulateGeneration();
+            // Генерируем команды
+            const generationData = await this.generateTeamsData();
             
             // Сохраняем результат
             this.lastGeneration = {
                 timestamp: new Date().toISOString(),
                 heroList: this.currentHeroList,
-                players: [] // Здесь будут сгенерированные игроки
+                players: generationData.players
             };
             
             // Сохраняем в storage
@@ -425,6 +426,9 @@ class RandomatchedApp {
             
             // Обновляем кнопку последней генерации
             this.updateLastGenerationButton();
+            
+            // Показываем результаты
+            window.resultsDisplay.showResults(this.lastGeneration);
             
         } catch (error) {
             console.error('Ошибка генерации команд:', error);
@@ -442,15 +446,47 @@ class RandomatchedApp {
     }
 
     /**
-     * Симуляция генерации (заглушка)
+     * Генерация данных команд
      */
-    async simulateGeneration() {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                console.log('Генерация завершена');
-                resolve();
-            }, 2000);
-        });
+    async generateTeamsData() {
+        // Получаем список героев
+        const heroList = this.storageManager.getList(this.currentHeroList);
+        if (!heroList || !heroList.heroes) {
+            throw new Error('Список героев не найден');
+        }
+        
+        // Создаем копию списка героев для перемешивания
+        const availableHeroes = [...heroList.heroes];
+        
+        // Перемешиваем героев
+        this.shuffleArray(availableHeroes);
+        
+        // Создаем игроков (по умолчанию 4 игрока)
+        const playerCount = 4;
+        const players = [];
+        
+        for (let i = 0; i < playerCount && i < availableHeroes.length; i++) {
+            players.push({
+                index: i,
+                heroName: availableHeroes[i],
+                team: (i % 2) + 1 // Чередуем команды: 1, 2, 1, 2
+            });
+        }
+        
+        // Небольшая задержка для имитации генерации
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        return { players };
+    }
+
+    /**
+     * Перемешивание массива (алгоритм Fisher-Yates)
+     */
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
     /**
@@ -471,20 +507,8 @@ class RandomatchedApp {
         
         console.log('Показ последней генерации:', this.lastGeneration);
         
-        const generationContent = `
-            <div class="generation-content">
-                <h3>Последняя генерация</h3>
-                <p>Функция просмотра последней генерации будет добавлена в следующих версиях!</p>
-                <div class="generation-info">
-                    <p><strong>Время:</strong> ${new Date(this.lastGeneration.timestamp).toLocaleString()}</p>
-                    <p><strong>Список героев:</strong> ${this.lastGeneration.heroList}</p>
-                </div>
-            </div>
-        `;
-        
-        window.modalManager.createFullscreen('Последняя генерация', generationContent, {
-            animation: 'fade-in'
-        });
+        // Показываем результаты через модуль ResultsDisplay
+        window.resultsDisplay.showResults(this.lastGeneration);
     }
 
     /**
