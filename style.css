@@ -704,7 +704,7 @@ body {
   flex-direction: column;
   gap: var(--md-sys-spacing-6);
   flex: 1;
-  justify-content: center;
+  justify-content: space-between;
   height: 100%;
   overflow: hidden;
 }
@@ -715,6 +715,7 @@ body {
   justify-content: center;
   align-items: center;
   flex: 0 0 auto;
+  margin-top: var(--md-sys-spacing-4);
 }
 
 .dropdown-container {
@@ -788,6 +789,7 @@ body {
   flex-direction: column;
   gap: var(--md-sys-spacing-4);
   flex: 0 0 auto;
+  margin-bottom: var(--md-sys-spacing-4);
 }
 
 .secondary-buttons {
@@ -917,6 +919,7 @@ body {
   .content-container {
     gap: var(--md-sys-spacing-6);
     height: 100%;
+    justify-content: space-between;
   }
   
   .header-title {
@@ -951,6 +954,7 @@ body {
     gap: var(--md-sys-spacing-4);
     /* Обеспечиваем правильное распределение пространства */
     height: 100%;
+    justify-content: space-between;
   }
   
   .header-content {
